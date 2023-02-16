@@ -1,0 +1,50 @@
+{% load static %}
+<div class="wrapper">
+  <!-- Header Start -->
+  <header id="header">
+    <div class="main-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+            <div class="logo">              
+                <a href="{% url 'home' %}" class="nav-brand mt-3">
+                  OnlineMarket
+                </a>
+              
+            </div>
+            
+            <div class="main-location mt-3">
+              <ul>
+                <li class="location-has-children choose-location">
+                  <form action="#">
+                    <input
+                      type="text"
+                      value=""
+                      name="location"
+                      placeholder="Enter your delivery location"
+                      autocomplete="off"
+                    />
+                    <span
+                      id="foodbakery_radius_location_open"
+                      class="foodbakery-radius-location"
+                      ><i class="icon-target5"></i
+                    ></span>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-4">
+            <div class="login-option">           
+              <a class="cs-color cs-popup-joinus-btn login-popup" href="">My Account</a>
+              <!-- <a class="cs-color cs-popup-joinus-btn login-popup text-danger" href="">Logout</a> -->
+              <a class="cs-color cs-popup-joinus-btn login-popup" href="">Register Restaurant </a>
+              <a class="cs-color cs-popup-joinus-btn login-popup" href="">Login</a> / 
+              <a class="cs-color cs-popup-joinus-btn login-popup ml-0" href="{% url 'registerUser' %}">Register</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
