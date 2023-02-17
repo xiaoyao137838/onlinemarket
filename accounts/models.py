@@ -39,8 +39,8 @@ class User(AbstractBaseUser):
 
     first_name = models.CharField(max_length=20, blank=True, null=True)
     last_name = models.CharField(max_length=20, blank=True, null=True)
-    username = models.CharField(max_length=20)
-    email = models.EmailField(max_length=50, unique=True)
+    username = models.CharField(max_length=20, unique=True)
+    email = models.EmailField(max_length=50)
     is_active = models.BooleanField(default=False)
     phone = models.CharField(max_length=15, blank=True, null=True)
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True)
@@ -53,13 +53,13 @@ class User(AbstractBaseUser):
   
 
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return self.username
     
     def get_role(self):
         if self.role == 1:
