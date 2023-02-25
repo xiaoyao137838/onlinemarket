@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-section pt-5">
+       <div class="page-section">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Cart items</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+
+                                    <div class="text-centor p-5" style="display: none;" id="empty-cart">
+                                        <h3>Cart is empty!</h3>
+                                    </div>
+                                    
+                                    <div id="menu-item-list-6272" class="menu-itam-list">
+                                        <ul>
+                                            {% if cart_items %}
+                                            {% for item in cart_items %}
+                                            <li id="cart-item-{{item.id}}">
+                                        
+                                                <div class="image-holder"> <a href=""><img src="{{item.product.image.url}}" alt=""></a></div>
+                                                <div class="text-holder">
+                                                    <h6>{{item.product}}</h6>
+                                                    <span>{{item.product.description}}</span>
+                                                    <a href="{% url 'vendor_detail' item.product.vendor.slug_name %}" class="badge badge-warning">{{item.product.vendor}}</a>
+                                                </div>
+                                                <div class="price-holder">
+                                                    <span class="price">${{item.product.price}}</span>
+                                                    <a href="#" 
+                                                    id="{{item.id}}" data-id="{{item.product.id}}" data-url="{% url 'deduce_cart' item.product.id %}" class="decrease_cart" style="margin-right: 28px;"><i class="icon-minus text-color"></i></a>
+                                                    <label for="" id="quantity-{{item.product.id}}">0</label>
+                                                    <a href="#" data-id="{{item.product.id}}" data-url="{% url 'add_cart' item.product.id %}" class="add_to_cart" style="margin-right: 28px;"><i class="icon-plus4 text-color"></i></a>
+                                                    <a href="#" data-id="{{item.id}}" data-url="{% url 'remove_cart' item.id %}" class="remove_cart" style="margin-right: 28px;"><i class="icon-delete text-color"></i></a>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                            {% else %}
+                                            <div class="text-centor p-5">
+                                                <h3>Cart is empty!</h3>
+                                            </div>
+
+                                            {% endif %}
+                                        </ul>
+                                        
+                                    </div>
+                                    {% for item in cart_items %}
+                                    <span id="quantity-{{item.product.id}}" class="item_qty d-none" data-qty="{{ item.quantity }}">{{ item.quantity }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Your order</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    <div>
+                                        <ul>
+                                            <li style="list-style-type: none;">
+                                                Subtotal
+                                                <span class="price float-right">
+                                                    <span class="currency">$</span>
+                                                    <span id="subtotal">{{subtotal}}</span>
+                                                </span>
+                                            </li>
+                                            <li style="list-style-type: none;">
+                                                Tax
+                                                <span class="price float-right">
+                                                    <span class="currency">$</span>
+                                                    <span id="tax">{{tax}}</span>
+                                                </span>
+                                            </li>
+                                            <li style="list-style-type: none; font-weight: 600;">
+                                                TOTOAL
+                                                <span class="price float-right">
+                                                    <span class="currency">$</span>
+                                                    <span id="grand_total">{{grand_total}}</span>
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

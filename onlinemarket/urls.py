@@ -18,11 +18,22 @@ from django.urls import path, include
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static 
+from market import views as marketViews
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('accounts/', include('accounts.urls')),
+    path('customer/', include('customer.urls')),
+    path('vendor/', include('vendor.urls')),
+    path('market/', include('market.urls')),
+
+    #cart
+    path('cart/', marketViews.cart, name='cart'),
+
+    path('checkout/', marketViews.checkout, name='checkout'),
+
+  #  path('orders/', include('order.urls')),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

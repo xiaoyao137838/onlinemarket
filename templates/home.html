@@ -28,7 +28,7 @@
                 text-align: center;
               "
             >
-              We are in the business of food<br />our restaurants do
+              We serve for customers and small businesses!<br />
             </h1>
             <p
               style="
@@ -38,8 +38,7 @@
                 text-align: center;
               "
             >
-              Ridiculus sociosqu cursus neque cursus curae ante scelerisque
-              vehicula.
+              Please search using vendor or product name you want.
             </p>
           </div>
         </div>
@@ -49,7 +48,7 @@
               <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-5 col-xs-12">
                   <div class="field-holder">
-                    <input type="text" placeholder="Resturant name" />
+                    <input type="text" placeholder="Vendor or product name" />
                   </div>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-5 col-xs-12">
@@ -190,93 +189,29 @@
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="element-title align-left">
-            <h2>Top Restaurants</h2>
-            <p>Explore restaurants, bars, and cafés by locality</p>
+            <h2>Top services</h2>
+            <p>Explore shops, restaurants, bars, and more</p>
           </div>
         </div>
+        <br>
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 px-0">
           <div class="company-logo">
             <ul>
+              {% for vendor in vendors %}
               <li class="has-border">
-                <figure>
-                  <a href="#"
+                <figure class="wrapper">
+                  <a href="{% url 'vendor_detail' vendor.slug_name %}"
                     ><img
-                      src="{% static '/extra-images/listing-logo18.png' %}"
-                      class="attachment-full size-full wp-post-image"
+                      src="{{vendor.profile.user_pic.url}}"
+                      class=""
+                      style="object-fit: cover;"
                       alt=""
                   /></a>
                 </figure>
               </li>
-              <li class="has-border">
-                <figure>
-                  <a href="#"
-                    ><img
-                      src="{% static '/extra-images/fb-restaurant-02.jpg' %}"
-                      class="attachment-full size-full wp-post-image"
-                      alt=""
-                  /></a>
-                </figure>
-              </li>
-              <li class="has-border">
-                <figure>
-                  <a href="#"
-                    ><img
-                      src="{% static '/extra-images/fb-restaurant-04.jpg' %}"
-                      class="attachment-full size-full wp-post-image"
-                      alt=""
-                  /></a>
-                </figure>
-              </li>
-              <li class="has-border">
-                <figure>
-                  <a href="#"
-                    ><img
-                      src="{% static '/extra-images/fb-restaurant-06.jpg' %}"
-                      class="attachment-full size-full wp-post-image"
-                      alt=""
-                  /></a>
-                </figure>
-              </li>
-              <li class="has-border">
-                <figure>
-                  <a href="#"
-                    ><img
-                      src="{% static '/extra-images/xlisting-logo03.png.pagespeed.ic_.aT-o9LinEJ.png' %}"
-                      class="attachment-full size-full wp-post-image"
-                      alt=""
-                  /></a>
-                </figure>
-              </li>
-              <li class="has-border">
-                <figure>
-                  <a href="#"
-                    ><img
-                      src="{% static '/extra-images/listing-logo09.png' %}"
-                      class="attachment-full size-full wp-post-image"
-                      alt=""
-                  /></a>
-                </figure>
-              </li>
-              <li class="has-border">
-                <figure>
-                  <a href="#"
-                    ><img
-                      src="{% static '/extra-images/listing-logo18.png' %}"
-                      class="attachment-full size-full wp-post-image"
-                      alt=""
-                  /></a>
-                </figure>
-              </li>
-              <li class="has-border">
-                <figure>
-                  <a href="#"
-                    ><img
-                      src="{% static '/extra-images/fb-restaurant-09.png' %}"
-                      class="attachment-full size-full wp-post-image"
-                      alt=""
-                  /></a>
-                </figure>
-              </li>
+              {% endfor %}
+              
+              
             </ul>
           </div>
         </div>
@@ -299,53 +234,21 @@
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="element-title align-center">
-            <h2>Choose From Most Popular Restaurants</h2>
-            <p>Cum doctus civibus efficiantur in imperdiet deterruisset.</p>
+            <h2>Choose From Most Popular Vendors</h2>
+            
           </div>
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="listing fancy">
             <ul class="row">
+              {% for vendor in vendors %}
               <li class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                 <div class="list-post featured">
                   <div class="img-holder">
                     <figure>
                       <a href="#"
                         ><img
-                          src="{% static '/extra-images/listing-logo18.png' %}"
-                          class="img-thumb wp-post-image"
-                          alt=""
-                      /></a>
-                    </figure>
-                    <span class="restaurant-status close">
-                      <em class="bookmarkRibbon"></em>Close
-                    </span>
-                  </div>
-                  <div class="text-holder">
-                    <div class="list-rating">
-                      <div class="rating-star">
-                        <span class="rating-box" style="width: 100%"></span>
-                      </div>
-                      <span class="reviews">(1)</span>
-                    </div>
-                    <div class="post-title">
-                      <h5>
-                        <a href="listing-detail.html">Restaurant Demo</a>
-                        <span class="sponsored text-color">Sponsored</span>
-                      </h5>
-                    </div>
-                    <address><span>Type of food : </span> Apple Juice</address>
-                  </div>
-                </div>
-              </li>
-
-              <li class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                <div class="list-post featured">
-                  <div class="img-holder">
-                    <figure>
-                      <a href="#"
-                        ><img
-                          src="{% static '/extra-images/listing-logo09.png' %}"
+                          src="{{vendor.profile.user_pic.url}}"
                           class="img-thumb wp-post-image"
                           alt=""
                       /></a>
@@ -363,17 +266,15 @@
                     </div>
                     <div class="post-title">
                       <h5>
-                        <a href="listing-detail.html">Classic Restaurant</a>
+                        <a href="{% url 'vendor_detail' vendor.slug_name %}">{{vendor}}</a>
                         <span class="sponsored text-color">Sponsored</span>
                       </h5>
                     </div>
-                    <address>
-                      <span>Type of food : </span> Chicken Roast, Chines Soup,
-                      Cold Coffee, Cold Drink, Hot Dogs
-                    </address>
+                
                   </div>
                 </div>
               </li>
+              {% endfor %}
             </ul>
           </div>
         </div>
