@@ -78,7 +78,12 @@
                                                 </span>
                                             </li>
                                             <li style="list-style-type: none;">
-                                                Tax
+                                                {% for key, val in tax_dict.items %}
+                                                <span>{{key}} </span>
+                                                {% for i in val%}
+                                                <small>({{i}}%)</small>
+                                                {% endfor %}
+                                                {% endfor %}
                                                 <span class="price float-right">
                                                     <span class="currency">$</span>
                                                     <span id="tax">{{tax}}</span>

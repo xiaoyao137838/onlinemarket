@@ -135,8 +135,10 @@ $(document).ready(function(){
 
         if (is_closed) {
             condition = "day != ''"
+            is_closed = 'True'
         } else {
             condition = "day != '' && from_time != '' && to_time != ''"
+            is_closed = 'False'
         }
 
         if (eval(condition)) {
@@ -159,11 +161,12 @@ $(document).ready(function(){
     })
 
     update_view_add_opening_hour = function(response) {
+        console.log(response)
         if (response.status == 'success') {
             if (response.is_closed == 'Closed') {
-                html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>Closed</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/delete/'+response.id+'/">Remove</a></td></tr>';
+                html = '<tr id="hour-'+response.id+'"><td style="border: none;"><b>'+response.day+'</b></td><td style="border: none;">Closed</td><td style="border: none;"><a href="#" class="remove_hour" data-url="/vendor/opening-hours/delete/'+response.id+'/">Remove</a></td></tr>';
             } else {
-                html = '<tr id="hour-'+response.id+'"><td><b>'+response.day+'</b></td><td>'+response.from_hour+' - '+response.to_hour+'</td><td><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>';
+                html = '<tr id="hour-'+response.id+'"><td style="border: none;"><b>'+response.day+'</b></td><td style="border: none;">'+response.from_hour+' - '+response.to_hour+'</td><td style="border: none;"><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>';
             }
 
             $('.opening_hours').append(html);
@@ -183,6 +186,8 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.status == 'success') {
                     document.getElementById('hour-'+response.id).remove()
+                } else {
+                    swal(response.message, '', 'error')
                 }
             }
         })

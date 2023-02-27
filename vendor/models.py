@@ -22,19 +22,18 @@ class Vendor(models.Model):
     def is_open(self):
         today_date = date.today()
         today = today_date.isoweekday()
-
         opening_hours = OpeningHour.objects.filter(vendor=self, day=today)
-        now = datetime.now()
-        current_time = now.strftime("%H:%M:%S")
-
+     
         is_open = False
+        now = datetime.now().strftime('%H: %M')
         for opening_hour in opening_hours:
-            if not opening_hour.is_closed:
-                start = str(datetime.strptime(opening_hour.from_time, "%I:%M:%p").time())
-                end = str(datetime.strptime(opening_hour.to_time, "%I:%M:%p").time())
-                if current_time > start and current_time < end:
+            if opening_hour.from_time and opening_hour.to_time:
+                start = datetime.strptime(opening_hour.from_time, '%I:%M %p').strftime('%H: %M')
+                end = datetime.strptime(opening_hour.to_time, '%I:%M %p').strftime('%H: %M')
+                if now > start and now < end:
                     is_open = True
                     break
+
         return is_open
     
     def save(self, *args, **kwargs):
@@ -84,7 +83,7 @@ DAYS = [
     (7, ('Sunday')),
 ]  
 
-HOUR_OF_DAY_24 = [(time(h, m).strftime('%I:%M:%p'), time(h, m).strftime('%I:%M:%p')) for h in range(0, 24) for m in (0, 30)]
+HOUR_OF_DAY_24 = [(time(h, m).strftime('%I:%M %p'), time(h, m).strftime('%I:%M %p')) for h in range(0, 24) for m in (0, 30)]
 
 class OpeningHour(models.Model):
     vendor = ForeignKey(Vendor, on_delete=models.CASCADE)

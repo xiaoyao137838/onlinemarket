@@ -156,49 +156,64 @@ def opening_hours(request):
     }
     return render(request, 'vendors/opening_hours.html', context)
 
-@login_required(login_url='login')
-@user_passes_test(check_role_vendor)
 def add_opening_hour(request):
-    vendor = get_vendor(request)
-    print('add opening hour is running')
-    if request.method == 'POST' and request.header.get('x-requested_with') == 'XMLHttpRequest':
-        day, from_hour, to_hour, is_closed = request.POST
-        try:
-            opening_hour = OpeningHour.objects.create(vendor=vendor, day=day, from_time=from_hour, to_time=to_hour, is_closed=is_closed)
+    if request.user.is_authenticated:
+        vendor = get_vendor(request)
+        print('add opening hour is running')
+        if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            day = request.POST['day']
+            from_time = request.POST['from_time']
+            to_time = request.POST['to_time']
+            is_closed = request.POST['is_closed']
 
-            if opening_hour:
-                if opening_hour.is_closed:
-                    response = {
-                        'status': 'success',
-                        'id': opening_hour.id,
-                        'day': opening_hour.get_day_display(),
-                        'is_closed': 'Closed',
-                    }
+                
 
-                else:
-                    response = {
-                        'status': 'success',
-                        'id': opening_hour.id,
-                        'day': opening_hour.get_day_display(),
-                        'from_hour': opening_hour.from_time,
-                        'to_hour': opening_hour.to_time,
-                    }
-            return JsonResponse(response)
-        
-        except IntegrityError as e:
-            response = {
-                'status': 'failed',
-                'message': from_time + '-' + to_time + 'already exists for this day'
-            }
-            return JsonResponse(response)
+            try:
+                opening_hours = OpeningHour.objects.filter(vendor=vendor, day=day)
+                for opening_hour in opening_hours:
+                    if opening_hour.is_closed:
+                        return JsonResponse({'status': 'failed', 'message': 'This day is closed'})
+                    
+                opening_hour = OpeningHour.objects.create(vendor=vendor, day=day, from_time=from_time, to_time=to_time, is_closed=is_closed)
+                current_opening_hour = OpeningHour.objects.get(vendor=vendor, day=day,from_time=from_time, to_time=to_time, is_closed=is_closed)
 
+                if current_opening_hour:
+                    if current_opening_hour.is_closed:
+                        response = {
+                            'status': 'success',
+                            'id': current_opening_hour.id,
+                            'day': current_opening_hour.get_day_display(),
+                            'is_closed': 'Closed',
+                        }
+
+                    else:
+                        response = {
+                            'status': 'success',
+                            'id': current_opening_hour.id,
+                            'day': current_opening_hour.get_day_display(),
+                            'from_hour': current_opening_hour.from_time,
+                            'to_hour': current_opening_hour.to_time,
+                        }
+                return JsonResponse(response)
+            
+            except IntegrityError as e:
+                response = {
+                    'status': 'failed',
+                    'message': from_time + '-' + to_time + ' already exists for this day'
+                }
+                return JsonResponse(response)
+        else:
+            return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
     else:
-        HttpResponse('Invalid request')
+        return JsonResponse({'status': 'failed', 'message': 'Please login first'})
  
-@login_required(login_url='login')
-@user_passes_test(check_role_vendor)
 def delete_opening_hour(request, id):
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        opening_hour = get_object_or_404(OpeningHour, id=id)
-        opening_hour.delete()
-        return JsonResponse({'status': 'success', 'id': id})
+    if request.user.is_authenticated:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            opening_hour = get_object_or_404(OpeningHour, id=id)
+            opening_hour.delete()
+            return JsonResponse({'status': 'success', 'id': id})
+        else:
+            return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
+    else:
+        return JsonResponse({'status': 'login_required', 'message': 'Please login first'})

@@ -25,9 +25,9 @@
                                 <tbody>
                                     {% for hour in opening_hours %}
                                         <tr id="hour-{{hour.id}}">
-                                            <td><b>{{ hour }}</b></td>
-                                            <td>{% if hour.is_closed %}Closed{% else %}{{ hour.from_time }} - {{ hour.to_time }}{% endif %}</td>
-                                            <td><a href="#" class="remove_hour" data-url="{% url 'delete_opening_hour' hour.id %}">Remove</a></td>
+                                            <td style="border: none;"><b>{{ hour }}</b></td>
+                                            <td style="border: none;">{% if hour.is_closed %}Closed{% else %}{{ hour.from_time }} - {{ hour.to_time }}{% endif %}</td>
+                                            <td style="border: none;"><a href="#" class="remove_hour" data-url="{% url 'delete_opening_hour' hour.id %}">Remove</a></td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

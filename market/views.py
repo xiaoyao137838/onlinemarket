@@ -7,7 +7,7 @@ from accounts.views import check_role_customer
 from vendor.models import Vendor, Product, OpeningHour
 from .models import CartItem
 from order.models import Order
-from datetime import date
+from datetime import date, datetime
 
 # Create your views here.
 def get_customer(request):
@@ -38,7 +38,7 @@ def vendor_detail(request, vendor_slug):
         cart_items = CartItem.objects.filter(customer=customer)
     else: 
         cart_items = None
-
+    
     context = {
         'vendor': vendor,
         'products': products,
