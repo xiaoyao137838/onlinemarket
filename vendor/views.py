@@ -55,22 +55,21 @@ def vendor_orders(request):
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
 def vendor_order(request, order_id):
-    order = Order.objects.get(id=order_id)
-    vendor = get_vendor(request)
-
-    if not order: 
-        messages.error(request, 'No such order found')
+    try:
+        order = Order.objects.get(id=order_id)
+        vendor = get_vendor(request)
+        
+        ordered_items = OrderedItem.objects.filter(order=order, product__vendor=vendor)
+        context = {
+            'order': order,
+            'ordered_items': ordered_items,
+            'subtotal': order.get_total_by_vendor()['subtotal'],
+            'tax_data': order.get_total_by_vendor()['tax_dict'],
+            'grand_total': order.get_total_by_vendor()['grand_total'],
+        }
+        return render(request, 'vendors/vendor_order.html', context)
+    except:
         return redirect('vendor_orders')
-    
-    ordered_items = OrderedItem.objects.filter(order=order, product__vendor=vendor)
-    context = {
-        'order': order,
-        'ordered_items': ordered_items,
-        'subtotal': order.get_total_by_vendor()['subtotal'],
-        'tax_data': order.get_total_by_vendor()['tax_dict'],
-        'grand_total': order.get_total_by_vendor()['grand_total'],
-    }
-    return render(request, 'vendors/vendor_order.html', context)
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
@@ -165,9 +164,7 @@ def add_opening_hour(request):
             from_time = request.POST['from_time']
             to_time = request.POST['to_time']
             is_closed = request.POST['is_closed']
-
-                
-
+            
             try:
                 opening_hours = OpeningHour.objects.filter(vendor=vendor, day=day)
                 for opening_hour in opening_hours:

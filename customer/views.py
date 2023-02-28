@@ -44,7 +44,6 @@ def customer_orders(request):
 
 def customer_order(request, order_no):
     try:
-
         order = Order.objects.get(id=order_no, status='Completed')
         ordered_items = OrderedItem.objects.filter(order=order)
 

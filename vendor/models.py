@@ -44,8 +44,8 @@ class Vendor(models.Model):
                 mail_template = 'emails/vendor_approval.html'
                 context = {
                     'user': self.user,
-                    'is_approved': is_verified,
-                    'email': self.user.email,
+                    'is_approved': self.is_verified,
+                    'to_email': self.user.email,
                 }
 
                 if self.is_verified:

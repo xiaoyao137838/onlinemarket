@@ -1,5 +1,6 @@
 from vendor.models import Vendor
 from .models import UserProfile
+from onlinemarket.settings import PAYPAL_CLIENT_ID
 
 def get_vendor(request):
     try:
@@ -14,3 +15,6 @@ def get_user_profile(request):
     except:
         profile = None
     return dict(profile=profile)
+
+def get_paypal_client_id(request):
+    return {'PAYPAL_CLIENT_ID': PAYPAL_CLIENT_ID}

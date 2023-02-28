@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, user_passes_test
+from accounts.models import UserProfile
+
+from order.forms import OrderForm
 from .context_processors import get_cart_counter, get_cart_amounts
 from accounts.views import check_role_customer
 from vendor.models import Vendor, Product, OpeningHour
@@ -152,7 +155,21 @@ def checkout(request):
     if cart_count <= 0:
         return redirect('marketplace')
     
+    profile = UserProfile.objects.get(user=request.user)
+    initial_values = {
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'phone': request.user.phone,
+        'email': request.user.email,
+        'address': profile.address,
+        'city': profile.city,
+        'state': profile.state,
+        'country': profile.country,
+        'zip_code': profile.zip_code,
+    }
+    order_form = OrderForm(initial=initial_values)
     context = {
-        'cart_items': Cart_items,
+        'cart_items': cart_items,
+        'order_form': order_form,
     }
     return render(request, 'market/checkout.html', context)
