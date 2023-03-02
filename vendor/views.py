@@ -24,6 +24,8 @@ def vendor_profile(request):
     if request.method == 'POST':
         profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
         vendor_form = VendorForm(request.POST, request.FILES, instance=vendor)
+        print(profile_form.is_valid(), vendor_form.is_valid())
+        print(profile_form.errors)
 
         if profile_form.is_valid() and vendor_form.is_valid():
             profile_form.save()
@@ -45,7 +47,7 @@ def vendor_profile(request):
 @user_passes_test(check_role_vendor)
 def vendor_orders(request):
     vendor = get_vendor(request)
-    orders = Order.objects.filter(vendors__in=[vendor.id]).order_by('created_at')
+    orders = Order.objects.filter(vendors__in=[vendor.id], status='Completed').order_by('-created_at')
 
     context = {
         'orders': orders,
@@ -54,18 +56,20 @@ def vendor_orders(request):
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
-def vendor_order(request, order_id):
+def vendor_order(request, order_no):
     try:
-        order = Order.objects.get(id=order_id)
+        print(order_no)
+        order = Order.objects.get(order_no=order_no)
         vendor = get_vendor(request)
-        
+        print(order)
         ordered_items = OrderedItem.objects.filter(order=order, product__vendor=vendor)
+        print(ordered_items)
         context = {
             'order': order,
             'ordered_items': ordered_items,
             'subtotal': order.get_total_by_vendor()['subtotal'],
-            'tax_data': order.get_total_by_vendor()['tax_dict'],
-            'grand_total': order.get_total_by_vendor()['grand_total'],
+            'tax_dict': order.get_total_by_vendor()['tax_dict'],
+            'grand_total': order.get_total_by_vendor()['total'],
         }
         return render(request, 'vendors/vendor_order.html', context)
     except:
@@ -93,7 +97,8 @@ def add_product(request):
             name = product_form.cleaned_data['name']
             product = product_form.save(commit=False)
             product.vendor = vendor
-            product.slug_name = slugify(name)
+            product.save()
+            product.slug_name = slugify(name)+'-'+str(product.id)
             product.save()
             messages.success(request, 'Add product successfully')
             return redirect('products')

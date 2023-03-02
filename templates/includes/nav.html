@@ -7,7 +7,8 @@
         <div class="row">
           <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
             <div class="logo">              
-                <a href="{% url 'home' %}" class="nav-brand mt-3">
+                <a href="{% url 'home' %}" class="cs-color cs-popup-joinus-btn login-popup" style="font-size: x-large;
+                font-weight: bolder; color: palevioletred;">
                   OnlineMarket
                 </a>
               
@@ -21,12 +22,14 @@
                       type="text"
                       value=""
                       name="location"
-                      placeholder="Enter your delivery location"
+                      id="location"
+                      placeholder="Your current location"
                       autocomplete="off"
                     />
                     <span
                       id="foodbakery_radius_location_open"
                       class="foodbakery-radius-location"
+                      onclick="getLocation()"
                       ><i class="icon-target5"></i
                     ></span>
                   </form>
@@ -40,7 +43,9 @@
               {% if user.is_authenticated %}
               <a href="{% url 'cart' %}">
                 <i class="fa fa-shopping-cart text-danger" style="font-size: 20px;"></i>
-                <span class="badge badge-warning" id="cart_counter" style="border-radius: 50px; position: relative; bottom:10px; left: -5px;">{{cart_count}}</span>
+                {% if cart_count > 0 %}
+                  <span class="badge badge-warning" id="cart_counter" style="border-radius: 50px; position: relative; bottom:10px; left: -5px;">{{cart_count}}</span>
+                {% endif %}
               </a>
               {% endif%}
               <a class="cs-color cs-popup-joinus-btn login-popup" href="{% url 'marketplace' %}">Market</a>
@@ -59,3 +64,37 @@
     </div>
   </header>
 </div>
+<script>
+  let x = document.getElementById("location");
+  let current_location = sessionStorage.getItem("current_location");
+  if (current_location != "") {
+    x.value = current_location;
+  }
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+      x.innerHTML = "Geolocation is not supported by this browser";
+    }
+  }
+
+  function showPosition(position) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    const GOOGLE_API_KEY = "{{GOOGLE_API_KEY}}"
+    const url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"+&key="+GOOGLE_API_KEY
+
+    $.ajax({
+      type: 'GET',
+      url: url,
+      success: function(response) {
+        current_location = response.results[0].formatted_address;
+        x.value = current_location;
+        sessionStorage.setItem("current_location", current_location);
+        window.location = '?lat='+lat+'&lng='+lng;
+      }
+
+    })
+  }
+</script>

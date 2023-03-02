@@ -1,3 +1,59 @@
+let autocomplete;
+
+function initAutoComplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById('id_address'),
+        {
+            types: ['geocode', 'establishment'],
+            componentRestrictions: {'country': ['us']},
+        })
+    autocomplete.addListener('place_changed', onPlaceChanged);    
+}
+
+
+function onPlaceChanged() {
+    const place = autocomplete.getPlace();
+    if (!place.geometry) {
+        document.getElementById('id_address').placeholder = 'Start typing...';
+    } else {
+        console.log(place);
+        
+    }
+    const geocoder = new google.maps.Geocoder()
+    const address = document.getElementById('id_address').value
+    geocoder.geocode({'address': address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            const latitude = results[0].geometry.location.lat();
+            const longitude = results[0].geometry.location.lng();
+            $('#id_latitude').val(latitude);
+            $('#id_longitude').val(longitude);
+            $('#id_address').val(address);
+        }
+    });
+
+    const components = place.address_components;
+    let zip_code = '';
+    for (let i = 0; i < components.length; i++) {
+        for (let j = 0; j < components[i].types.length; j++) {
+            if (components[i].types[j] == 'locality') {
+                $('#id_city').val(components[i].long_name);
+            }
+            if (components[i].types[j] == 'administrative_area_level_1') {
+                $('#id_state').val(components[i].long_name);
+            }
+            if (components[i].types[j] == 'country') {
+                $('#id_country').val(components[i].long_name);
+            }
+            if (components[i].types[j] == 'postal_code') {
+                zip_code = components[i].long_name;
+            }
+        }
+    }
+    if (zip_code != '') {
+        $('#id_zip_code').val(zip_code);
+    }
+
+}
 
 $(document).ready(function(){
     
@@ -112,7 +168,8 @@ $(document).ready(function(){
     function checkCartEmpty() {
         const cart_counter = document.getElementById('cart_counter').innerHTML
         if (cart_counter == 0) {
-            document.getElementById('empty-cart').style.display = 'block'
+            document.getElementById('empty-cart').style.display = 'block';
+            // document.getElementById('cart-counter').style.display = 'none';
         }
 
     }

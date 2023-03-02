@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http.response import HttpResponse
 from django.contrib import messages, auth
+
+from order.models import Order
+from vendor.models import Vendor
 from .forms import UserForm
 from .models import User, UserProfile
 from vendor.forms import VendorForm
@@ -9,6 +12,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .utils import check_role_customer, check_role_vendor, get_role_url, send_email_activation
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
+import simplejson as json
+from datetime import datetime
 
 
 # Create your views here.
@@ -188,19 +193,37 @@ def dashboard(request):
 @login_required(login_url='login') 
 @user_passes_test(check_role_customer)
 def customer_dashboard(request):  
-    profile = get_object_or_404(UserProfile, user=request.user)
+    orders = Order.objects.filter(customer=request.user, status='Completed').order_by('-created_at')
+    recent_orders = orders[:5]
     context = {
-        'customer': request.user,
-        'profile': profile,
+        'orders_count': orders.count(),
+        'orders': orders,
+        'recent_orders': recent_orders,
     } 
     return render(request, 'customers/dashboard.html', context)
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor) 
 def vendor_dashboard(request):   
-    profile = get_object_or_404(UserProfile, user=request.user)
+    vendor = Vendor.objects.get(user=request.user)
+    orders = Order.objects.filter(status='Completed', vendors__in=[vendor]).order_by('-created_at')
+    recent_orders = orders[:5]
+
+    revenue = 0
+    for order in orders:
+        revenue += order.get_total_by_vendor()['total']
+
+    revenue_month = 0
+    month = datetime.now().month
+    orders_month = orders.filter(created_at__month=month)
+    for order in orders_month:
+        revenue_month += order.get_total_by_vendor()['total']
+
     context = {
-        'vendor': request.user,
-        'profile': profile,
+        'orders_count': orders.count(),
+        'orders': orders,
+        'recent_orders': recent_orders,
+        'revenue': round(revenue, 2),
+        'revenue_month': round(revenue_month, 2),
     }
     return render(request, 'vendors/dashboard.html', context)

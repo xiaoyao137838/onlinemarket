@@ -13,3 +13,31 @@
     animation-name: show-toast;
     animation-duration: 5s;
 }
+
+table > thead > tr > th {
+    border: none !important;
+    padding-top: 5% !important;
+}
+
+table > tbody > tr > td{
+    padding-top: 5% !important;
+    border: none !important;
+}
+
+/* hide radio button */
+.payment-method [type=radio]{
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.payment-method [type=radio] + img{
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Checked style */
+.payment-method [type=radio]:checked + img{
+    outline: 2px solid #ff0000;
+}

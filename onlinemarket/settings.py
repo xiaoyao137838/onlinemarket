@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'customer',
     'market',
     'order',
+    'django.contrib.gis',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'order.request_object.RequestObjectMiddleware',
 ]
 
 ROOT_URLCONF = 'onlinemarket.urls'
@@ -74,6 +76,7 @@ TEMPLATES = [
                 'market.context_processors.get_cart_counter',
                 'market.context_processors.get_cart_amounts',
                 'accounts.context_processors.get_paypal_client_id',
+                'accounts.context_processors.get_google_api_key',
             ],
         },
     },
@@ -87,7 +90,8 @@ WSGI_APPLICATION = 'onlinemarket.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
@@ -160,6 +164,13 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'onlinemarket <xiaoyao61030@outlook.com>'
 
+GOOGLE_API_KEY = config('GOOGLE_API_KEY')
+
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
+
+if DEBUG == True:
+    os.environ['PATH'] = os.path.join(BASE_DIR, '..\env\Lib\site-packages\osgeo') + ';' + os.environ['PATH']
+    os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, '..\env\Lib\site-packages\osgeo\data\proj') + ';' + os.environ['PATH']
+    GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, '..\env\Lib\site-packages\osgeo\gdal304.dll')

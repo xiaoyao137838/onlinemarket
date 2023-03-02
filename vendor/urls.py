@@ -6,7 +6,7 @@ urlpatterns = [
     path('', accountViews.vendor_dashboard, name='vendor'),
     path('vendor_profile/', views.vendor_profile, name='vendor_profile'),
     path('vendor_orders/', views.vendor_orders, name='vendor_orders'),
-    path('vendor_orders/<order_id>', views.vendor_order, name='vendor_order'),
+    path('vendor_orders/<order_no>', views.vendor_order, name='vendor_order'),
 
     path('products/', views.products, name='products'),
     path('products/add', views.add_product, name='add_product'),

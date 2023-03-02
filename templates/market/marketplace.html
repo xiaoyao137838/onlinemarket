@@ -41,8 +41,12 @@
                                             <div class="post-title">
                                                 <h3>
                                                     <a href="{% url 'vendor_detail' vendor.slug_name %}"><b>{{vendor}}</b></a>
-                                                   
+                                                    
                                                 </h3>
+                                                    {% if vendor.kms %}
+                                                    <small><b>{{vendor.kms}}km</b> from {{target_location}}</small>
+                                                    {% endif %}
+                                                   
                                             </div>
                                             
                                             

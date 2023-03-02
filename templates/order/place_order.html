@@ -98,7 +98,6 @@
 </div>
 <script>
     function getCookie(name) {
-        console.log('before cookie')
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
@@ -110,7 +109,6 @@
                 }
             }
         }
-        console.log('after cookie')
         return cookieValue;
     }
     
@@ -121,7 +119,6 @@
     const order_no = "{{ order.order_no }}"
     const csrftoken = getCookie('csrftoken')
     const order_complete_url = "{% url 'payment_complete' %}"
-    console.log('crsftoken: ', csrftoken)
 
     paypal.Buttons({
         createOrder: function(data, actions) {

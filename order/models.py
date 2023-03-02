@@ -2,8 +2,10 @@ from django.db import models
 from django.db.models.fields.related import ForeignKey
 from accounts.models import User
 from vendor.models import Product, Vendor
+import simplejson as json
 
 # Create your models here.
+request_object = ''
 class Payment(models.Model):
     payment_no = models.CharField(max_length=50, unique=True)
     method = models.CharField(max_length=20)
@@ -50,6 +52,40 @@ class Order(models.Model):
 
     def __str__(self):
         return self.order_no
+    
+    @property
+    def name(self):
+        return f'{self.first_name} {self.last_name}'
+    
+    def order_to_vendors(self):
+        return ','.join([str(i) for i in self.vendors.all()])
+    
+    def get_total_by_vendor(self):
+        vendor = Vendor.objects.get(user=request_object.user)
+        total_dict = json.loads(self.total_data)
+
+        subtotal = 0
+        tax = 0
+        total = 0
+        tax_dict = {}
+        if total_dict:
+            data = total_dict[str(vendor.id)]
+            for key, val in data.items():
+                subtotal += float(key)
+                tax_dict.update(val)
+                for type, value in val.items():
+                    for i, j in value.items():
+                        tax += j
+    
+        total = subtotal + tax
+
+        return {
+            'subtotal': subtotal,
+            'tax': tax,
+            'tax_dict': tax_dict,
+            'total': total,
+        }
+
     
 class OrderedItem(models.Model):
     product = ForeignKey(Product, on_delete=models.CASCADE)

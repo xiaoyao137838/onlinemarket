@@ -12,7 +12,7 @@ class CartItem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.product
     
 class Tax(models.Model):

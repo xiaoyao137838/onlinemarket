@@ -72,6 +72,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name 
+    
+    def clean(self):
+        self.name = self.name.capitalize() 
 
 DAYS = [
     (1, ('Monday')),

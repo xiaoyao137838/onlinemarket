@@ -70,7 +70,7 @@ def place_order(request):
             }
             return render(request, 'order/place_order.html', context)
         
-    return render(request, 'order/place_order.html')
+    return redirect('checkout')
 
 @login_required(login_url='login')
 def make_payment(request):
@@ -99,8 +99,6 @@ def make_payment(request):
             order.status = 'Completed'
             order.save()
 
-            
-
             #move items to ordered items
             cart_items = CartItem.objects.filter(customer=request.user)
             for item in cart_items:
@@ -115,7 +113,6 @@ def make_payment(request):
                 )
                 ordered_item.save()
             
-
             # send email to customer
             ordered_products = OrderedItem.objects.filter(order=order)
             subtotal = order.sub_amount
@@ -182,13 +179,10 @@ def make_payment(request):
 def payment_complete(request):
     order_no = request.GET['order_no']
     transaction_id = request.GET['trans_id']
-    print(order_no, transaction_id)
 
     try:
         order = Order.objects.get(order_no=order_no, payment__payment_no=transaction_id, status='Completed')
         ordered_items = OrderedItem.objects.filter(order=order)
-        print(order)
-        print(ordered_items)
 
         context = {
             'order': order,

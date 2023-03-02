@@ -3,6 +3,11 @@ from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.models import UserProfile
+from django.db.models import Q
+
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D
+from django.contrib.gis.db.models.functions import Distance
 
 from order.forms import OrderForm
 from .context_processors import get_cart_counter, get_cart_amounts
@@ -23,6 +28,32 @@ def marketplace(request):
     context = {
         'vendors': vendors,
         'vendor_count': vendor_count,
+    }
+    return render(request, 'market/marketplace.html', context)
+
+def search(request):
+    if 'address' not in request.GET:
+        return redirect('marketplace')
+    keyword = request.GET['keyword']
+    address = request.GET['address']
+    radius = request.GET['radius']
+    latitude = request.GET['lat']
+    longitude = request.GET['lng']
+  
+    vendor_ids_products = Product.objects.filter(name__icontains=keyword, is_available=True).values_list('vendor', flat=True)
+    vendors = Vendor.objects.filter(Q(id__in=vendor_ids_products, user__is_active=True, is_verified=True) | Q(vendor_name__icontains=keyword, user__is_active=True, is_verified=True))
+
+    if latitude and longitude and radius:
+        pnt = GEOSGeometry('POINT(%s %s)' % (longitude, latitude))
+        vendors = vendors.filter(profile__location__distance_lte=(pnt, D(km=radius))).annotate(distance=Distance("profile__location", pnt)).order_by("distance")
+
+        for vendor in vendors:
+            vendor.kms = round(vendor.distance.km, 1)
+
+    context = {
+        'vendors': vendors,
+        'vendor_count': vendors.count(),
+        'target_location': address,
     }
     return render(request, 'market/marketplace.html', context)
 
@@ -51,14 +82,10 @@ def vendor_detail(request, vendor_slug):
     }
     return render(request, 'market/vendor_detail.html', context)
 
-#cart
 @login_required(login_url='login')
-@user_passes_test(check_role_customer)
 def cart(request):
     user = request.user
-    if user.role == 'Vendor':
-        raise PermissionDenied
-    
+        
     customer = get_customer(request)
     cart_items = CartItem.objects.filter(customer=customer).order_by('created_at')
 
@@ -66,7 +93,6 @@ def cart(request):
         'cart_items': cart_items,
     }
     return render(request, 'market/cart.html', context)
-
 
 def add_cart(request, product_id):
     customer = get_customer(request)
@@ -148,7 +174,6 @@ def remove_cart(request, cart_id):
         })
 
 @login_required(login_url='login')
-@user_passes_test(check_role_customer)
 def checkout(request):
     cart_items = CartItem.objects.filter(customer=request.user)
     cart_count = cart_items.count()

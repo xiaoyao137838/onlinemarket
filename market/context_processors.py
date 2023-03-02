@@ -13,6 +13,7 @@ def get_cart_counter(request):
                 cart_count = 0
         except:
             cart_count = 0
+            
     return dict(cart_count=cart_count)
 
 def get_cart_amounts(request):
@@ -35,4 +36,5 @@ def get_cart_amounts(request):
         tax = round(tax, 2)
         tax_dict = {tax_obj.tax_type: {str(tax_obj.percentage): tax}}
         grand_total = subtotal + tax
+
     return dict(subtotal=subtotal, tax=tax, tax_dict=tax_dict, grand_total=grand_total)

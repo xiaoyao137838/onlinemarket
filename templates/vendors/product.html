@@ -50,8 +50,9 @@
                                             <div class="field-holder">
                                                 <label >Image</label>
                                                 {{product_form.image}}
-                                                
+                                                {% if product.image %}                                                
                                                 <img src="{{ product.image.url }}" alt="Product Image" width="100" class="mt-2">
+                                                {% endif %}
                                             </div>
                                         </div>
                                         
