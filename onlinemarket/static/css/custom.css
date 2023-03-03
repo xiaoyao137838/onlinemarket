@@ -41,3 +41,47 @@ table > tbody > tr > td{
 .payment-method [type=radio]:checked + img{
     outline: 2px solid #ff0000;
 }
+
+@media only screen and (max-width: 480px) {
+    .main-location.mt-3 {
+        width: auto !important;
+    }
+
+    .main-search-bar {
+        padding-top: 100px !important;
+        padding-bottom: 50px !important;
+    }
+
+    .user-dashboard {
+        width: 100% !important;
+    }
+    
+    .decrease_cart {
+        margin-right: 10px !important;
+    }
+
+    .add_to_cart {
+        margin-right: 10px !important;
+    }
+
+    .menu-itam-holder .quantity {
+        right: 0 !important;
+        margin-top: -30px !important;
+    }
+
+    .table.opening_hours {
+        width: 100% !important;
+    }
+
+    .table td {
+        padding: 0.5rem !important;
+    }
+
+    .set_opening_hour_closed {
+        margin: 5% !important;
+    }
+}
+
+table td, table th {
+    line-height: 1rem !important;
+}
