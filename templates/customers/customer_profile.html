@@ -30,7 +30,11 @@
                                                                 <li class="gal-img">
                                                                     <div class="drag-list">
                                                                         <div class="item-thumb">
+                                                                            {% if profile.cover_photo %}
                                                                             <img class="thumbnail" src="{{ profile.cover_photo.url }}" alt="">
+                                                                            {% else %}
+                                                                            <img class="thumbnail" src="{% static 'images/default-cover.png' %}" alt="">
+                                                                            {% endif %}
                                                                         </div>
                                                                     </div>
                                                                 </li>
@@ -52,7 +56,11 @@
                                                                 <li class="gal-img">
                                                                     <div class="drag-list">
                                                                         <div class="item-thumb">
+                                                                            {% if profile.user_pic %}
                                                                             <img class="thumbnail" src="{{ profile.user_pic.url }}" alt="">
+                                                                            {% else %}
+                                                                            <img class="thumbnail" src="{% static 'images/default-profile.png' %}" alt="">
+                                                                            {% endif %}
                                                                         </div>
                                                                     </div>
                                                                 </li>
@@ -141,7 +149,7 @@
                                     <div>
                                         <div class="field-holder">
                                             <div class="payment-holder input-button-loader">
-                                                <input class="update-restaurant" type="submit" value="Update Profile" onclick="location.href='restaurant-location.html';">
+                                                <input class="update-restaurant" type="submit" value="Update Profile">
                                             </div>
                                         </div>
                                     </div>

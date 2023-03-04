@@ -34,6 +34,7 @@ def marketplace(request):
 def search(request):
     if 'address' not in request.GET:
         return redirect('marketplace')
+    
     keyword = request.GET['keyword']
     address = request.GET['address']
     radius = request.GET['radius']
@@ -84,8 +85,6 @@ def vendor_detail(request, vendor_slug):
 
 @login_required(login_url='login')
 def cart(request):
-    user = request.user
-        
     customer = get_customer(request)
     cart_items = CartItem.objects.filter(customer=customer).order_by('created_at')
 

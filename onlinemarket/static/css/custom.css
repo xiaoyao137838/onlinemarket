@@ -12,6 +12,7 @@
     right: 20px;
     animation-name: show-toast;
     animation-duration: 5s;
+    z-index: 99;
 }
 
 table > thead > tr > th {

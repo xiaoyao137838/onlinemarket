@@ -24,14 +24,18 @@ def vendor_profile(request):
     if request.method == 'POST':
         profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
         vendor_form = VendorForm(request.POST, request.FILES, instance=vendor)
-        print(profile_form.is_valid(), vendor_form.is_valid())
-        print(profile_form.errors)
-
+       
         if profile_form.is_valid() and vendor_form.is_valid():
             profile_form.save()
             vendor_form.save()
             messages.success(request, 'Vendor profile updated successfully')
             return redirect('vendor_profile')
+        else:
+            context = {
+                'vendor_form': vendor_form,
+                'profile_form': profile_form,
+            }
+            return render(request, 'vendors/vendor_profile.html', context)
 
     profile_form = UserProfileForm(instance=user_profile)
     vendor_form = VendorForm(instance=vendor)
@@ -58,12 +62,9 @@ def vendor_orders(request):
 @user_passes_test(check_role_vendor)
 def vendor_order(request, order_no):
     try:
-        print(order_no)
         order = Order.objects.get(order_no=order_no)
         vendor = get_vendor(request)
-        print(order)
         ordered_items = OrderedItem.objects.filter(order=order, product__vendor=vendor)
-        print(ordered_items)
         context = {
             'order': order,
             'ordered_items': ordered_items,
@@ -119,9 +120,9 @@ def product(request, id):
         product_form = ProductForm(request.POST, request.FILES, instance=product)
         if product_form.is_valid():
             name = product_form.cleaned_data['name']
-            product = product_form.save(commit=False)
-            product.slug_name = slugify(name)
-            product_form.save()
+            product = product_form.save()
+            product.slug_name = slugify(name)+'-'+str(product.id)
+            product.save()
             messages.success(request, 'Product is updated successfully')
             return redirect('products')
     
@@ -163,7 +164,6 @@ def opening_hours(request):
 def add_opening_hour(request):
     if request.user.is_authenticated:
         vendor = get_vendor(request)
-        print('add opening hour is running')
         if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
             day = request.POST['day']
             from_time = request.POST['from_time']

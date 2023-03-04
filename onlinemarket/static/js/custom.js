@@ -49,10 +49,7 @@ function onPlaceChanged() {
             }
         }
     }
-    if (zip_code != '') {
-        $('#id_zip_code').val(zip_code);
-    }
-
+    $('#id_zip_code').val(zip_code);
 }
 
 $(document).ready(function(){

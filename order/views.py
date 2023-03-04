@@ -23,17 +23,8 @@ def place_order(request):
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
-            order = Order()
+            order = order_form.save(commit=False)
             order.customer = request.user
-            order.first_name = order_form.cleaned_data['first_name']
-            order.last_name = order_form.cleaned_data['last_name']
-            order.phone = order_form.cleaned_data['phone']
-            order.email = order_form.cleaned_data['email']
-            order.address = order_form.cleaned_data['address']
-            order.city = order_form.cleaned_data['city']
-            order.state = order_form.cleaned_data['state']
-            order.country = order_form.cleaned_data['country']
-            order.zip_code = order_form.cleaned_data['zip_code']
             order.payment_method = request.POST['payment_method']
 
             for item in cart_items:
@@ -61,9 +52,8 @@ def place_order(request):
                     sub_tax[i.tax_type] = {str(i.percentage): round(float(i.percentage) * sub_dict[key] / 100, 2)}
                 total_dict[key] = {str(sub_dict[key]) : sub_tax}
             order.total_data = json.dumps(total_dict)
-            print(total_dict)
             order.save()
-
+           
             context = {
                 'cart_items': cart_items,
                 'order': order,
@@ -75,7 +65,6 @@ def place_order(request):
 @login_required(login_url='login')
 def make_payment(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        print('AJAX received')
         order_no = request.POST['order_no']
         transaction_id = request.POST['transaction_id']
         payment_method = request.POST['payment_method']
@@ -92,8 +81,8 @@ def make_payment(request):
                 amount = amount,
                 status = status
             )
-
             payment.save()
+            
             order.payment = payment
             order.payment_method = payment_method
             order.status = 'Completed'

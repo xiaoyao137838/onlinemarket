@@ -22,11 +22,16 @@ def customer_profile(request):
         user_form = UserInfoForm(request.POST, instance=request.user)
      
         if profile_form.is_valid() and user_form.is_valid():
-            print(user_form)
             profile_form.save()
             user_form.save()
             messages.success(request, 'Customer profile updated successfully')
             return redirect('customer_profile')
+        else:
+            context = {
+                'user_form': user_form,
+                'profile_form': profile_form,
+            }
+            return render(request, 'customers/customer_profile.html', context)
 
     profile_form = UserProfileForm(instance=profile)
     user_form = UserForm(instance=request.user)

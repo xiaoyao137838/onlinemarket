@@ -30,6 +30,9 @@
                   {% endif %}
                 {% endfor %}
                 <li>
+                  {{user_form.non_field_errors}}
+                </li>
+                <li>
                   {{vendor_form.non_field_errors}}
                 </li>
                 {% for field in vendor_form %} 

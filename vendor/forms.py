@@ -10,7 +10,7 @@ class VendorForm(forms.ModelForm):
         fields = ['vendor_name', 'verified_file']
 
 class ProductForm(forms.ModelForm):
-    image = forms.FileField(widget=forms.FileInput(attrs={'class': 'btn btn-info'}),validators= [validate_picture_format])
+    image = forms.FileField(widget=forms.FileInput(attrs={'class': 'btn btn-info', 'required': 'not required'}),validators= [validate_picture_format])
 
     class Meta:
         model = Product
