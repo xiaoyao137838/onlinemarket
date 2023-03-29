@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %} 
+<div class="container my-5">
+    <div class="justify-content-center row">
+        <div class="col-md-8">
+            <div class="bg-white p-3">
+                <h4 class="mt-2 mb-3">Thank you for your flashsale order!</h4>
+                <h6>Hello {{sale_order.first_name}}, </h6><span class=""><b>Review your flashsale order below.</b></span>
+                <br>
+                <div class="container p-0 mt-3">
+                    <div class="row">
+                        <div class="col-12">
+                            <span class="">Flashsale order date: </span><span class="font-weight-bold float-right">{{sale_order.created_at}}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                        <span class="">Flashsale order number: </span><span class="font-weight-bold float-right">{{sale_order.order_no}}</span>
+                    </div>
+                    </div>
+                    
+                </div>
+                <div class="container p-0">
+                    <div class="row">
+                        <div class="col-12">
+                        <span class="">Transaction number: </span><span class="font-weight-bold float-right">{{sale_order.payment}}</span>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                        <span class="">Payment method: </span>
+                        <span class="font-weight-bold float-right">{{sale_order.payment_method}}</span>
+                    </div>
+                    </div>
+                   
+                </div>
+                <br>
+                <table class="table">
+                    <tbody>
+                    <tr>
+                    <td style="border:none;"><img src="{{ sale_order.product.image.url }}" width="100" alt="Food Image"></td>
+                        <td style="border:none;">
+                            <p class="mb-0"><b>{{sale_order.product}}</b></p>
+                            
+                        </td>
+                        <td style="border:none;">1 QTY</td>
+                        <td style="border:none;">${{sale_order.sub_amount}}</td>
+                    </tr>    
+                    </tbody>
+                </table>
+                <div class="row mt-5">
+                    <div class="d-flex justify-content-center col-md-6">
+                        <img src="{% static 'images/paid.png' %}" width="200">
+
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li style="list-style-type: none;">
+                                Subtotal
+                                <span class="price float-right">
+                                    <span class="currency">$</span>
+                                    <span id="subtotal">{{sale_order.sub_amount}}</span>
+                                </span>
+                            </li>
+                            <li style="list-style-type: none;">
+                                {% for key, val in tax_dict.items %}
+                                <span>{{key}} </span>
+                                {% for i in val%}
+                                <small>({{i}}%)</small>
+                                {% endfor %}
+                                {% endfor %}
+                                <span class="price float-right">
+                                    <span class="currency">$</span>
+                                    <span id="tax">{{sale_order.tax_amount}}</span>
+                                </span>
+                            </li>
+                            <li style="list-style-type: none; font-weight: 600;">
+                                TOTOAL
+                                <span class="price float-right">
+                                    <span class="currency">$</span>
+                                    <span id="grand_total">{{sale_order.total_amount}}</span>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <span class="d-block font-weight-bold">Thanks for shopping with us.</span>
+                        <span class="text-info">OnlineMarket Team</span>
+                    </div>
+                    <div>
+                        <span class="d-block font-weight-bold">Need help? </span>
+                        <span>Call: +1 4125156762</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

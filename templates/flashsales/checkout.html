@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="main-section pt-5">
+       <div class="page-section">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Your Billing Address</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder pb-3">
+                                    <div>
+                                        <form action="{% url 'flash_make_order' sale_order.flash_sale.id %}" method="post" >
+                                            {% csrf_token %}
+                                            <ul>
+                                            {{sale_order_form.as_p}}
+                                            
+                                            </ul>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Your order</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    <div id="menu-item-list-6272" class="menu-itam-list">
+                                        <ul>
+                                            <li id="">
+                                                <div class="image-holder"> <img src="{{ sale_order.product.image.url }}" alt=""></div>
+                                                <div class="text-holder">
+                                                    <h6>{{ sale_order.product }}</h6>
+                                                    <span>{{ sale_order.product.description }}</span>
+                                                    <a href="{% url 'vendor_detail' sale_order.product.vendor.slug_name %}" class="badge badge-warning">{{ sale_order.product.vendor }}</a>
+                                                </div>
+                                                <div class="price-holder">
+                                                    <span class="price">1 QTY</span>
+                                                </div>
+                                                
+                                            </li>
+                                            <li>
+                                                <div class="text-holder">
+                                                    <b>Normal price: </b>
+                                                </div>
+                                                <div class="price-holder">
+                                                    <span class="price">${{ sale_order.product.price }}</span>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="text-holder">
+                                                    <b>Flashsale price: </b>
+                                                </div>
+                                                <div class="price-holder">
+                                                    <span class="price">${{ sale_order.sub_amount }}</span>
+                                                </div>
+                                            </li>
+                                            <li style="list-style-type: none;">
+                                                Subtotal
+                                                <span class="price float-right">
+                                                    <span class="currency">$</span>
+                                                    <span id="subtotal">{{subtotal}}</span>
+                                                </span>
+                                            </li>
+                                            <li style="list-style-type: none;">
+                                                {% for key, val in tax_dict.items %}
+                                                <span>{{key}} </span>
+                                                {% for i in val%}
+                                                <small>({{i}}%)</small>
+                                                {% endfor %}
+                                                {% endfor %}
+                                                <span class="price float-right">
+                                                    <span class="currency">$</span>
+                                                    <span id="tax">{{tax}}</span>
+                                                </span>
+                                            </li>
+                                            <li style="list-style-type: none; font-weight: 600;">
+                                                TOTOAL
+                                                <span class="price float-right">
+                                                    <span class="currency">$</span>
+                                                    <span id="grand_total">{{grand_total}}</span>
+                                                </span>
+                                            </li>
+                                            <h5>SELECT PAYMENT METHOD</h5>
+                                            <div class="payment-method">
+                                                <label>
+                                                    <input type="radio" name="payment_method" value="PayPal">
+                                                    <img src="{% static 'images/PayPal.png' %}" alt="PayPal" width="100">
+                                                </label>
+                                            </div>
+                                            <span class="text-danger" id="payment-method-error"></span>
+                                            <button onclick="return payMethodConfirm();" type="submit" class="btn btn-danger w-100 my-3">PLACE ORDER</button>
+                                        </ul>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function payMethodConfirm(){
+        const payMethod = $("input[name='payment_method']:checked").val();
+        console.log(payMethod)
+        if (!payMethod) {
+            $('#payment-method-error').html('Please select the payment method');
+            return false;
+        } else {
+            const confirm = confirm('You have select the '+payMethod+'as your preferred payment method. \nClick "OK" to continue.')
+            if (confirm) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    $("input[name='payment_method']").on('change', function() {
+        $('#payment-method-error').html('');
+    })
+</script>
+{% endblock %}

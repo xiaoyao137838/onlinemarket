@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'market',
     'order',
     'django.contrib.gis',
+    'flashsale',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,7 @@ TEMPLATES = [
                 'market.context_processors.get_cart_amounts',
                 'accounts.context_processors.get_paypal_client_id',
                 'accounts.context_processors.get_google_api_key',
+                'flashsale.context_processors.flash_sale_order',
             ],
         },
     },

@@ -1,0 +1,120 @@
+                                        
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="main-section">
+    <div class="page-section restaurant-detail-image-section" style=" background: url({{flashsale.vendor.profile.cover_photo.url}}) no-repeat scroll 0 0 / cover;">
+        <!-- Container Start -->
+        <div class="container">
+            <!-- Row Start -->
+            <div class="row">
+                <!-- Column Start -->
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="company-info-detail">
+                        <div class="company-info">
+                            <div class="img-holder">
+                                <figure>
+                                    <img src="{{vendor.profile.user_pic.url}}" alt="">
+                                </figure>
+                            </div>
+                            <div class="text-holder">
+                                <span class="restaurant-title">{{vendor}} {% if not vendor.is_open %}[Closed]{% endif %}</span>
+                                {% if vendor.profile.address %}
+                                <div class="text">
+                                    <i class="icon-location"></i>
+                                    <p>{{vendor.profile.address}}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="delivery-timing reviews-sortby">
+                            
+                            <ul>
+                                <li>
+                                    <a href="#" class="reviews-sortby-active">
+                                        <span>Today :</span>
+                                        {% for opening_hour in current_opening_hours %}
+                                        <span>{% if opening_hour.is_closed %}Closed{% else %} {{opening_hour.from_time}} - {{opening_hour.to_time}}{% endif %}</span>
+                                        {% endfor %}
+                                        <i class="icon-chevron-small-down"></i>
+                                    </a>
+                                    <ul class="delivery-dropdown">
+                                        {% for opening_hour in opening_hours %}
+                                        <li><a href="#"><span class="opend-day">{{opening_hour}}</span> <span class="opend-time"><small>:</small>{% if opening_hour.is_closed %}Closed{% else %} {{opening_hour.from_time}} - {{opening_hour.to_time}}{% endif %}</span></a></li>
+                                        {% endfor %}
+                                        
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Column End -->
+            </div>
+            <!-- Row End -->
+        </div>
+        <!-- Container End -->
+    </div>
+
+    <div class="page-section">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Flashsale</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    
+                                    <div id="menu-item-list-6272" class="menu-itam-list">
+
+                                        
+                                                <div class="image-holder"> <a href=""><img src="{{product.image.url}}" alt=""></a></div>
+                                                <div class="text-holder">
+                                                    <h6>{{product}}</h6>
+                                                    <span>{{product.description}}</span>
+                                                    
+                                                </div>
+                                                {% if flashsale.old_price %}
+                                                <div>
+                                                    <span><b>Normal price:</b> ${{flashsale.old_price}}</span>
+                                                </div>
+                                                {% endif %}
+                                                <div>
+                                                    <span class="price"><b>Flashsale price:</b> ${{flashsale.new_price}}</span>
+                                                </div>
+                                                {% if flashsale.from_time %}
+                                                <div>
+                                                    <b>Start time:</b> ${{flashsale.from_time}}
+                                                </div>
+                                                {% endif %}
+                                                <div>
+                                                    <b>End time:</b> ${{flashsale.to_time}}
+                                                </div>
+                                                <div class="row justify-content-center m-3">
+                                                    <div>
+                                                        <button class="btn btn-primary m-3" id="flash_select" data-id="{{flashsale.id}}" data-url="{% url 'flash_select' %}">Purchase</button>
+                                                    </div>
+                                                    <div>
+                                                        <a href="{% url 'flash_checkout' flashsale.id %}" id="flash_checkout" class="btn btn-info m-3 d-none">Checkout</a>
+                                                       
+                                                    </div>
+                                                </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

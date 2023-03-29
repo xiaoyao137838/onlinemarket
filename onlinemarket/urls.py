@@ -27,6 +27,7 @@ urlpatterns = [
     path('customer/', include('customer.urls')),
     path('vendor/', include('vendor.urls')),
     path('market/', include('market.urls')),
+    path('', include('flashsale.urls')),
 
     #cart
     path('cart/', marketViews.cart, name='cart'),

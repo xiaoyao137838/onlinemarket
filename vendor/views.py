@@ -177,8 +177,7 @@ def add_opening_hour(request):
                         return JsonResponse({'status': 'failed', 'message': 'This day is closed'})
                     
                 opening_hour = OpeningHour.objects.create(vendor=vendor, day=day, from_time=from_time, to_time=to_time, is_closed=is_closed)
-                current_opening_hour = OpeningHour.objects.get(vendor=vendor, day=day,from_time=from_time, to_time=to_time, is_closed=is_closed)
-
+                current_opening_hour = OpeningHour.objects.get(vendor=vendor, day=day, from_time=from_time, to_time=to_time, is_closed=is_closed)
                 if current_opening_hour:
                     if current_opening_hour.is_closed:
                         response = {
@@ -187,7 +186,6 @@ def add_opening_hour(request):
                             'day': current_opening_hour.get_day_display(),
                             'is_closed': 'Closed',
                         }
-
                     else:
                         response = {
                             'status': 'success',
@@ -196,7 +194,7 @@ def add_opening_hour(request):
                             'from_hour': current_opening_hour.from_time,
                             'to_hour': current_opening_hour.to_time,
                         }
-                return JsonResponse(response)
+                    return JsonResponse(response)
             
             except IntegrityError as e:
                 response = {

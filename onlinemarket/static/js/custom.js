@@ -134,7 +134,6 @@ $(document).ready(function(){
             type: 'GET',
             url: url,
             success: function(response) {
-                console.log(response)
                 if (response.status == 'login_required') {
                     swal(response.message, '', 'info')
                 } else if (response.status == 'failed') {
@@ -215,12 +214,11 @@ $(document).ready(function(){
     })
 
     update_view_add_opening_hour = function(response) {
-        console.log(response)
         if (response.status == 'success') {
             if (response.is_closed == 'Closed') {
-                html = '<tr id="hour-'+response.id+'"><td style="border: none;"><b>'+response.day+'</b></td><td style="border: none;">Closed</td><td style="border: none;"><a href="#" class="remove_hour" data-url="/vendor/opening-hours/delete/'+response.id+'/">Remove</a></td></tr>';
+                html = '<tr id="hour-'+response.id+'"><td style="border: none;"><b>'+response.day+'</b></td><td style="border: none;">Closed</td><td style="border: none;"><a href="#" class="remove_hour" data-url="/vendor/opening_hours/delete/'+response.id+'">Remove</a></td></tr>';
             } else {
-                html = '<tr id="hour-'+response.id+'"><td style="border: none;"><b>'+response.day+'</b></td><td style="border: none;">'+response.from_hour+' - '+response.to_hour+'</td><td style="border: none;"><a href="#" class="remove_hour" data-url="/vendor/opening-hours/remove/'+response.id+'/">Remove</a></td></tr>';
+                html = '<tr id="hour-'+response.id+'"><td style="border: none;"><b>'+response.day+'</b></td><td style="border: none;">'+response.from_hour+' - '+response.to_hour+'</td><td style="border: none;"><a href="#" class="remove_hour" data-url="/vendor/opening_hours/delete/'+response.id+'">Remove</a></td></tr>';
             }
 
             $('.opening_hours').append(html);
@@ -230,8 +228,8 @@ $(document).ready(function(){
         }
     }
 
-    $('.remove_hour').on('click', function(e) {
-        e.preventDefault()
+    $(document).on('click', '.remove_hour', function(e) {
+        e.preventDefault();
         url = $(this).attr('data-url');
 
         $.ajax({
@@ -246,6 +244,31 @@ $(document).ready(function(){
             }
         })
     })
-
     
+    $('#flash_select').on('click', function(e) {
+        e.preventDefault();
+        const url = $(this).attr('data-url');
+        const flash_sale_id = $(this).attr('data-id');
+        const flash_select = document.getElementById('flash_select')
+        const flash_checkout = document.getElementById('flash_checkout')
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: {
+                flash_sale_id: flash_sale_id,
+            },
+            success: (response) => {
+                console.log(response)
+                if (response.status == 'error') {
+                    swal(response.message, '', 'warning')
+                } else {
+                    
+                    flash_select.classList.remove('btn-primary')
+                    flash_select.classList.add('btn-secondary')
+                    flash_checkout.classList.remove('d-none')
+                    swal(response.message, '', 'success')
+                }
+            }
+        })
+    })
 })

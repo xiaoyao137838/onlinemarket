@@ -22,7 +22,7 @@
 							<hr>
                             <button class="btn btn-secondary" onclick="history.back()"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button>
                             <br><br>
-                            <h6>Modify Food Item</h6>
+                            <h6>Modify Product</h6>
                             <form action="{% url 'product' product.id %}" method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="form-fields-set">
