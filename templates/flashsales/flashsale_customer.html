@@ -25,7 +25,11 @@
                                     <p>{{vendor.profile.address}}</p>
                                 </div>
                                 {% endif %}
+                                <div class="text-holder mt-2">
+                                    <a href="{% url 'flashsales' vendor.slug_name %}" class="btn btn-success btn-sm">Flashsales</a>
+                                </div>
                             </div>
+                            
                         </div>
                         <div class="delivery-timing reviews-sortby">
                             
@@ -73,37 +77,36 @@
                                     <div id="menu-item-list-6272" class="menu-itam-list">
 
                                         
-                                                <div class="image-holder"> <a href=""><img src="{{product.image.url}}" alt=""></a></div>
-                                                <div class="text-holder">
-                                                    <h6>{{product}}</h6>
-                                                    <span>{{product.description}}</span>
-                                                    
-                                                </div>
-                                                {% if flashsale.old_price %}
-                                                <div>
-                                                    <span><b>Normal price:</b> ${{flashsale.old_price}}</span>
-                                                </div>
-                                                {% endif %}
-                                                <div>
-                                                    <span class="price"><b>Flashsale price:</b> ${{flashsale.new_price}}</span>
-                                                </div>
-                                                {% if flashsale.from_time %}
-                                                <div>
-                                                    <b>Start time:</b> ${{flashsale.from_time}}
-                                                </div>
-                                                {% endif %}
-                                                <div>
-                                                    <b>End time:</b> ${{flashsale.to_time}}
-                                                </div>
-                                                <div class="row justify-content-center m-3">
-                                                    <div>
-                                                        <button class="btn btn-primary m-3" id="flash_select" data-id="{{flashsale.id}}" data-url="{% url 'flash_select' %}">Purchase</button>
-                                                    </div>
-                                                    <div>
-                                                        <a href="{% url 'flash_checkout' flashsale.id %}" id="flash_checkout" class="btn btn-info m-3 d-none">Checkout</a>
-                                                       
-                                                    </div>
-                                                </div>
+                                        <div class="image-holder"> <a href=""><img src="{{product.image.url}}" alt=""></a></div>
+                                        <div class="text-holder">
+                                            <h6>{{product}}</h6>
+                                            <span>{{product.description}}</span>
+                                            
+                                        </div>
+                                        {% if flashsale.old_price %}
+                                        <div>
+                                            <span><b>Normal price:</b> ${{flashsale.old_price}}</span>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <span class="price"><b>Flashsale price:</b> ${{flashsale.new_price}}</span>
+                                        </div>
+                                        {% if flashsale.from_time %}
+                                        <div>
+                                            <b>Start time:</b> ${{flashsale.from_time}}
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <b>End time:</b> ${{flashsale.to_time}}
+                                        </div>
+                                        <div class="row justify-content-center m-3">
+                                            <div>
+                                                <button class="btn btn-primary m-3" id="flash_select" data-id="{{flashsale.id}}" data-url="{% url 'flash_select' %}">Purchase</button>
+                                            </div>
+                                            <div>
+                                                <a href="{% url 'flash_checkout' flashsale.id %}" id="flash_checkout" class="btn btn-info m-3 d-none">Checkout</a>
+                                            </div>
+                                        </div>
                                     </div>
                                     
                                 </div>

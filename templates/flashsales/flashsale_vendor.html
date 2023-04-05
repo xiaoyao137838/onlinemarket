@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block content %}
-{% include 'includes/alert.html' %}
 
 <!-- Main Section Start -->
 <div class="main-section">
@@ -30,7 +29,7 @@
                                         <div class="col-lg-6 col-md-6 col-sm-12">
                                             <div class="field-holder">
                                                 <a href="{% url 'product' flashsale.product.id %}"><b>Product: {{ flashsale.product }}</b></a>
-                                                <span>{{ flashsale.product.description }}</span>
+                                                <p>{{ flashsale.product.description }}</p>
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-6 col-sm-12">

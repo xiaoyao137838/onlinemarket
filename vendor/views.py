@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.db import IntegrityError
 from accounts.models import UserProfile
+from flashsale.models import FlashSale
 from order.models import Order, OrderedItem
 from .models import Vendor, Product, OpeningHour
 from accounts.forms import UserProfileForm
@@ -81,6 +82,11 @@ def vendor_order(request, order_no):
 def products(request):
     vendor = get_vendor(request)
     products = Product.objects.filter(vendor=vendor).order_by('created_at')
+    flashsales = FlashSale.objects.filter(vendor=vendor)
+    products_flashsales = flashsales.values_list('product', flat=True)
+    for product in products:
+        if product.id in products_flashsales:
+            product.flashsale = flashsales.get(product=product.id)
 
     context = {
         'products': products,

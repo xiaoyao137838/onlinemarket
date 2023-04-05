@@ -8,7 +8,7 @@ class SaleForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SaleForm, self).__init__(*args, **kwargs)
-        read_only_list = ['old_price', 'total_qty', 'locked_qty', 'available_qty']
+        read_only_list = ['old_price', 'locked_qty']
         for field in self.fields:
             if field in read_only_list:
                 self.fields[field].widget.attrs['readonly'] = 'readonly'

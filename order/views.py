@@ -101,6 +101,9 @@ def make_payment(request):
                     payment = payment
                 )
                 ordered_item.save()
+
+            # Clean the cart
+            cart_items.delete()
             
             # send email to customer
             ordered_products = OrderedItem.objects.filter(order=order)

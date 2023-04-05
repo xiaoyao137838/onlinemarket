@@ -1,6 +1,7 @@
 from django.db import models
-from vendor.models import Vendor, Product
 from accounts.models import User
+from .utils import generate_order_no
+from vendor.models import Vendor, Product
 from order.models import Payment
 
 # Create your models here.
@@ -15,14 +16,18 @@ class FlashSale(models.Model):
     to_time = models.DateTimeField()
     total_qty = models.IntegerField()
     locked_qty = models.IntegerField(default=0, blank=True, null=True)
-    available_qty = models.IntegerField(blank=True, null=True)
+    available_qty = models.IntegerField(default=0)
 
     modified_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('vendor', 'product')
+
 
 class FlashOrder(models.Model):
     STATUS = [
+        (-1, 'No stock'),
         (0, 'Created'),
         (1, 'Paied'),
         (2, 'Invalid')
@@ -51,5 +56,3 @@ class FlashOrder(models.Model):
 
     modified_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
-

@@ -249,8 +249,8 @@ $(document).ready(function(){
         e.preventDefault();
         const url = $(this).attr('data-url');
         const flash_sale_id = $(this).attr('data-id');
-        const flash_select = document.getElementById('flash_select')
-        const flash_checkout = document.getElementById('flash_checkout')
+        let flash_select = document.getElementById('flash_select');
+        let flash_checkout = document.getElementById('flash_checkout');
         $.ajax({
             type: 'GET',
             url: url,
@@ -263,10 +263,10 @@ $(document).ready(function(){
                     swal(response.message, '', 'warning')
                 } else {
                     
-                    flash_select.classList.remove('btn-primary')
-                    flash_select.classList.add('btn-secondary')
-                    flash_checkout.classList.remove('d-none')
-                    swal(response.message, '', 'success')
+                    flash_select.classList.remove('btn-primary');
+                    flash_select.classList.add('btn-secondary');
+                    flash_checkout.classList.remove('d-none');
+                    swal(response.message, '', 'success');
                 }
             }
         })

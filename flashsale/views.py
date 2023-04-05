@@ -11,7 +11,10 @@ from .forms import SaleForm, SaleOrderForm
 from .utils import generate_order_no, get_role_url
 from django.contrib import messages
 from datetime import datetime, date
+from .kafka.kafka_service import producer
+from .redis_service import add_customer_to_limit, add_sale, create_flashsale, add_stock, is_customer_qualified, lock_stock
 import json
+import threading
 
 # Create your views here.
 
@@ -20,7 +23,7 @@ def get_vendor(request):
 
 def flashsales(request, vendor_slug):
     vendor = get_object_or_404(Vendor, slug_name=vendor_slug)
-    flashsales = FlashSale.objects.filter(vendor=vendor, is_active=True)
+    flashsales = FlashSale.objects.filter(vendor=vendor, is_active=True).order_by('created_at')
     context = {
         'flashsales': flashsales,
         'flashsale_count': flashsales.count()
@@ -30,17 +33,21 @@ def flashsales(request, vendor_slug):
 def add_flashsale(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
-        sale_form = SaleForm(request.post)
+        sale_form = SaleForm(request.POST)
         if sale_form.is_valid():
             sale = sale_form.save(commit=False)
             sale.vendor = get_vendor(request)
+            sale.product = product
             sale.save()
+
+            create_flashsale(request, sale)
             messages.success(request, 'The new flash sale is added')
-            return redirect('/products')
+            return redirect('products')
         else:
             messages.error(request, 'Some fields are not correct')
             context = {
-                'sale_form': sale_form
+                'sale_form': sale_form,
+                'product': product
             }
             return render(request, 'flashsales/new.html', context)
 
@@ -48,11 +55,12 @@ def add_flashsale(request, product_id):
         'old_price': product.price,
         'new_price': product.price,
         'from_time': datetime.now(),
-        'to_time': datetime.now()
+        'to_time': datetime.now(),
     }    
     sale_form = SaleForm(initial=init)
     context = {
-        'sale_form':sale_form
+        'sale_form':sale_form,
+        'product': product
     }
     return render(request, 'flashsales/new.html', context)
     
@@ -61,7 +69,7 @@ def delete_flashsale(request, id):
     flashsale.delete()
     messages.info(request, 'The flash sale is deleted successfully')
     vendor = get_vendor(request)
-    return redirect(f'/{ vendor.slug_name }/flash_sales')
+    return redirect('products')
 
 def flashsale(request, id):
     url = get_role_url(request)
@@ -72,8 +80,11 @@ def flashsale_vendor(request, id):
     flashsale = get_object_or_404(FlashSale, id=id)
     if request.method == 'POST':
         sale_form = SaleForm(request.POST, instance=flashsale)
+
         if sale_form.is_valid():
-            sale_form.save()
+            sale = sale_form.save()
+            add_stock(request, sale)
+            add_sale(request, sale)
             messages.success(request, 'The flash sale is updated successfully')
             return redirect(f'/flash_sales/v/{id}')
         else:
@@ -96,6 +107,7 @@ def flashsale_customer(request, id):
     vendor = flashsale.vendor 
     product = flashsale.product 
     opening_hours = OpeningHour.objects.filter(vendor=vendor)
+
     today_date = date.today()
     today = today_date.isoweekday()
     current_opening_hour = opening_hours.filter(day=today).order_by('from_time')
@@ -114,39 +126,39 @@ def select_flash_sale(request):
     if request.user.is_authenticated:
         if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
             flash_sale_id = request.GET['flash_sale_id']
-            try:
-                flash_sale = FlashSale.objects.get(id=flash_sale_id)
-                product = flash_sale.product
-                sub_amount = flash_sale.new_price
-                tax_obj = Tax.objects.get(tax_type='Tax')
-                tax_amount = sub_amount * float(tax_obj.percentage) / 100
-                tax_data = {tax_obj.tax_type: { str(tax_obj.percentage): tax_amount }}
-                total_amount = sub_amount + tax_amount
-                try:
-                    flash_order = FlashOrder.objects.get(customer=request.user, flash_sale=flash_sale)
-                    return JsonResponse({
-                        'status': 'error',
-                        'message': 'The flash sale is selected before'
-                    })
-                except:
-                    flash_order = FlashOrder.objects.create(
-                        customer=request.user,
-                        flash_sale=flash_sale,
-                        product=product,
-                        sub_amount=sub_amount,
-                        tax_amount=tax_amount,
-                        total_amount=total_amount,
-                        tax_data=json.dumps(tax_data)
-                    )
+            print(is_customer_qualified(request, flash_sale_id))
+            if is_customer_qualified(request, flash_sale_id):
+                add_customer_to_limit(request.user.id, flash_sale_id)
+
+                if lock_stock(flash_sale_id):
+                    print('locked successfully')
+                    data = dict(customer_id=request.user.id, flash_sale_id=flash_sale_id)
+                    print(json.dumps(data))
+                    producer.send(topic='create_order', 
+                                  key=flash_sale_id.encode('utf-8'), 
+                                  value=json.dumps(data).encode('utf-8'))
+                    def delay_send():
+                        producer.send(topic='check_pay_status', 
+                                      key=flash_sale_id.encode('utf-8'), 
+                                      value=json.dumps(data).encode('utf-8'))
+                    timer = threading.Timer(2 * 60.0, delay_send)
+                    timer.start()
+
                     return JsonResponse({
                         'status': 'success',
-                        'message': 'The flash sale is selected successfully'
+                        'message': 'The flashsale is selected successfully'
                     })
-            except:
+                else:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'Sorry, the flashsale is sold out'
+                    })
+            else:
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'No such flash sale exists'
+                    'message': 'Sorry, you have selected before'
                 })
+            
         else:
             return JsonResponse({
                 'status': 'error',
@@ -171,8 +183,9 @@ def checkout(request, id):
         'country': profile.country,
         'zip_code': profile.zip_code,
     }
-
+    
     sale_order = flash_sale_order(request, id)['flash_sale_order']
+  
     sale_order_form = SaleOrderForm(initial=init, instance=sale_order)
     context = {
         'sale_order_form': sale_order_form,
@@ -187,10 +200,13 @@ def checkout(request, id):
 def make_order(request, id):
     if request.method == 'POST':
         sale_order = flash_sale_order(request, id)['flash_sale_order']
+        if not sale_order:
+            messages.warning(request, 'Please wait')
+            return redirect('/flash_checkout')
+        
         order_form = SaleOrderForm(request.POST, instance=sale_order)
         if order_form.is_valid():
             sale_order = order_form.save()        
-            
             sale_order.order_no = generate_order_no(sale_order)
             sale_order.payment_method = request.POST['payment_method']
             sale_order.save()
@@ -222,6 +238,12 @@ def make_payment(request):
 
             try:
                 sale_order = FlashOrder.objects.get(order_no=sale_order_no)
+                if sale_order.status != 0:
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': 'This order is not able to pay'
+                    })
+                
                 flash_payment = Payment(
                     payment_no=payment_no,
                     customer=request.user,
@@ -234,6 +256,12 @@ def make_payment(request):
                 sale_order.payment = flash_payment
                 sale_order.status = 1
                 sale_order.save()
+
+                data = { 'sale_order_no': sale_order_no }
+                producer.send(topic='pay_done', 
+                                key=sale_order_no.encode('utf-8'), 
+                                value=json.dumps(data).encode('utf-8'))
+                
                 return JsonResponse({
                     'status': 'success',
                     'message': 'Payment is created successfully',
