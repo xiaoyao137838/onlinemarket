@@ -1,27 +1,34 @@
 from django.test import TestCase
-from vendor.models import Product, OpeningHour
+from vendor.models import Product
 import pytest
 from model_bakery import baker
 from pprint import pprint
 
-class TestProduct(TestCase):
-
-    def setUp(self):
-        self.prod_2 = Product(name='test_2')
-
-    def test_str(self):
-        self.assertEqual(str(self.prod_2), 'test_2')
-
-class TestOpeningHour(TestCase):
-
-    def setUp(self):
-        self.opening_hour_1 = OpeningHour(day=7)
-        self.opening_hour_2 = OpeningHour(day=8)
-
-    # def test_str(self, vendor_test):
-    #     self.assertEqual(str(self.opening_hour_1), 'Sunday')
-    #     assert str(vendor_test) == 'vendor_test'
+@pytest.mark.unit
+def test_vendor_str(vendor):
+    assert vendor.vendor_name == 'vendor_1'
+    assert str(vendor) == 'vendor_1'
 
 @pytest.mark.unit
-def test_vendor_creation(vendor_test, session):
-    assert str(vendor_test) == 'vendor_test'
+def test_vendor_is_open(vendor):
+    assert vendor.is_open() == False
+
+@pytest.mark.unit
+def test_product_str(product):
+    assert product.name == 'product_1'
+    assert str(product) == 'product_1'
+
+@pytest.mark.unit
+def test_product_clean(vendor):
+    product_clean = Product(name='product_2', price=10, vendor=vendor)
+    product_clean.clean()
+    product_clean.save()
+    product_clean = Product.objects.get(name='Product_2')
+    assert product_clean.name == 'Product_2'
+    assert str(product_clean) == 'Product_2'
+
+@pytest.mark.unit
+def test_opening_hour_str(opening_hour):
+    assert opening_hour.day == 1
+    assert str(opening_hour) == 'Monday'
+ 

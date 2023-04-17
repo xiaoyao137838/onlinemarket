@@ -2,8 +2,10 @@ import redis
 import json 
 from vendor.models import OpeningHour
 from django.forms.models import model_to_dict
+from decouple import config
 
-redis_cli = redis.Redis('192.168.99.100')
+print(config('REDIS_SERVER'))
+redis_cli = redis.Redis(config('REDIS_SERVER'))
 print('Redis is started')
 
 def create_flashsale(request, flashsale):

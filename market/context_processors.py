@@ -31,10 +31,13 @@ def get_cart_amounts(request):
         except:
             subtotal = 0    
 
-        tax_obj = Tax.objects.get(tax_type='Tax')
-        tax = subtotal * float(tax_obj.percentage) / 100
-        tax = round(tax, 2)
-        tax_dict = {tax_obj.tax_type: {str(tax_obj.percentage): tax}}
-        grand_total = subtotal + tax
+        try:
+            tax_obj = Tax.objects.get(tax_type='Tax')
+            tax = subtotal * float(tax_obj.percentage) / 100
+            tax = round(tax, 2)
+            tax_dict = {tax_obj.tax_type: {str(tax_obj.percentage): tax}}
+            grand_total = subtotal + tax
+        except:
+            subtotal = 0
 
     return dict(subtotal=round(subtotal, 2), tax=tax, tax_dict=tax_dict, grand_total=round(grand_total, 2))

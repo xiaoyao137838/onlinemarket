@@ -98,9 +98,13 @@ DATABASES = {
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST'),
-        # 'TEST': {
-        #     'NAME': config('TEST_DB_NAME'),
-        # },
+        'TEST': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': config('TEST_DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+        },
     }
 }
 

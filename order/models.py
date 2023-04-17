@@ -62,13 +62,14 @@ class Order(models.Model):
     
     def get_total_by_vendor(self):
         vendor = Vendor.objects.get(user=request_object.user)
-        total_dict = json.loads(self.total_data)
+        
        
         subtotal = 0
         tax = 0
         total = 0
         tax_dict = {}
-        if total_dict:
+        try:
+            total_dict = json.loads(self.total_data)
             data = total_dict[str(vendor.id)]
             for key, val in data.items():
                 subtotal += float(key)
@@ -76,7 +77,8 @@ class Order(models.Model):
                 for type, value in val.items():
                     for i, j in value.items():
                         tax += j
-    
+        except:
+            total = 0
         total = subtotal + tax
 
         return {

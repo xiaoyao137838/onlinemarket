@@ -186,5 +186,7 @@ def payment_complete(request):
         }
         return render(request, 'order/payment_complete.html', context)
 
-    except:
-        return redirect('home')
+    # except:
+    #     return redirect('home')
+    finally:
+        print('0')

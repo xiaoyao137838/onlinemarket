@@ -76,6 +76,7 @@ def vendor_order(request, order_no):
         return render(request, 'vendors/vendor_order.html', context)
     except:
         return redirect('vendor_orders')
+ 
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
@@ -201,7 +202,7 @@ def add_opening_hour(request):
                             'to_hour': current_opening_hour.to_time,
                         }
                     return JsonResponse(response)
-            
+          
             except IntegrityError as e:
                 response = {
                     'status': 'failed',

@@ -13,6 +13,8 @@ from django.contrib import messages
 from datetime import datetime, date
 from .kafka.kafka_service import producer
 from .redis_service import add_customer_to_limit, add_sale, create_flashsale, add_stock, is_customer_qualified, lock_stock
+from django.contrib.auth.decorators import login_required, user_passes_test
+from accounts.views import check_role_vendor
 import json
 import threading
 
@@ -29,7 +31,9 @@ def flashsales(request, vendor_slug):
         'flashsale_count': flashsales.count()
     }
     return render(request, 'flashsales/flashsales.html', context)
-    
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)   
 def add_flashsale(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
@@ -63,7 +67,9 @@ def add_flashsale(request, product_id):
         'product': product
     }
     return render(request, 'flashsales/new.html', context)
-    
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)    
 def delete_flashsale(request, id):
     flashsale = get_object_or_404(FlashSale, id=id)
     flashsale.delete()
@@ -71,11 +77,13 @@ def delete_flashsale(request, id):
     vendor = get_vendor(request)
     return redirect('products')
 
+@login_required(login_url='login')
 def flashsale(request, id):
     url = get_role_url(request)
     return redirect(url + str(id))
 
-
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor) 
 def flashsale_vendor(request, id):
     flashsale = get_object_or_404(FlashSale, id=id)
     if request.method == 'POST':
@@ -102,6 +110,7 @@ def flashsale_vendor(request, id):
     }
     return render(request, 'flashsales/flashsale_vendor.html', context)
 
+@login_required(login_url='login')
 def flashsale_customer(request, id):
     flashsale = get_object_or_404(FlashSale, id=id)
     vendor = flashsale.vendor 
@@ -122,6 +131,7 @@ def flashsale_customer(request, id):
 
     return render(request, 'flashsales/flashsale_customer.html', context)
 
+@login_required(login_url='login')
 def select_flash_sale(request):
     if request.user.is_authenticated:
         if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -169,7 +179,8 @@ def select_flash_sale(request):
             'status': 'error',
             'message': 'Please login first'
         })
-    
+
+@login_required(login_url='login')    
 def checkout(request, id):
     profile = UserProfile.objects.get(user=request.user)
     init = {
@@ -196,7 +207,8 @@ def checkout(request, id):
         'sale_order': sale_order
     }
     return render(request, 'flashsales/checkout.html', context)
-    
+
+@login_required(login_url='login') 
 def make_order(request, id):
     if request.method == 'POST':
         sale_order = flash_sale_order(request, id)['flash_sale_order']
@@ -228,7 +240,8 @@ def make_order(request, id):
             return render(request, 'flashsales/checkout.html', context)
         
     return redirect('/flash_checkout')
-    
+
+@login_required(login_url='login')    
 def make_payment(request):
     if request.user.is_authenticated:
         if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -284,6 +297,7 @@ def make_payment(request):
             'message': 'Login first'
         })
     
+@login_required(login_url='login')   
 def pay_done(request):
     sale_order_no = request.GET['sale_order_no']
     payment_no = request.GET['trans_id']

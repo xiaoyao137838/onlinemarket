@@ -1,0 +1,27 @@
+asgiref==3.6.0
+async-timeout==4.0.2
+attrs==22.2.0
+colorama==0.4.6
+coverage==7.2.2
+Django==4.1.6
+exceptiongroup==1.1.1
+Faker==12.0.1
+GDAL @ file:///C:/Users/14125/Documents/Bootcamp/Online%20marketing%20project/onlinemarket/GDAL-3.4.3-cp310-cp310-win_amd64.whl
+iniconfig==2.0.0
+kafka-python==2.0.2
+mixer==7.2.2
+model-bakery==1.10.1
+packaging==23.0
+Pillow==9.4.0
+pluggy==1.0.0
+psycopg2==2.9.5
+pytest==7.2.2
+pytest-django==4.5.2
+python-dateutil==2.8.2
+python-decouple==3.7
+redis==4.5.3
+simplejson==3.18.3
+six==1.16.0
+sqlparse==0.4.3
+tomli==2.0.1
+tzdata==2022.7

@@ -7,5 +7,3 @@ class FlashsaleConfig(AppConfig):
 
     def ready(self):
         from . import redis_service
-        # from .kafka import kafka_service
-        # from ..kafka_consumers import kafka_message

@@ -35,10 +35,13 @@ if __name__ == '__main__':
                 flash_sale.locked_qty -= 1
                 flash_order.save()
                 flash_sale.save()
-                reverse_stock(flash_sale_id)
+                try:
+                    reverse_stock(flash_sale_id)
+                except:
+                    print('reverse is not successful')
                 remove_customer_to_limit(customer_id, flash_sale_id)
                 print('after available: ', flash_sale.available_qty)
             print('check_pay_status is consumed by message queue')
         except:
             print('No such flash order found')
-
+   
