@@ -7,12 +7,18 @@ def test_generate_order_no(flash_order):
     order_no = generate_order_no(flash_order)
     assert isinstance(order_no, str)
 
-def test_check_role_vendor(customer):
+def test_check_role_vendor(customer, user):
+    assert check_role_vendor(user) == True 
+
     with pytest.raises(PermissionDenied):
         assert check_role_vendor(customer) == False
 
-def test_check_role_customer(customer):
+def test_check_role_customer(customer, user):
     assert check_role_customer(customer) 
+    
+    with pytest.raises(PermissionDenied):
+        assert check_role_customer(user) == False
+
 
 def test_get_role_url(customer):
     request = RequestFactory()

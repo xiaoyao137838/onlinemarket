@@ -96,12 +96,12 @@ def flashsale_vendor(request, id):
             messages.success(request, 'The flash sale is updated successfully')
             return redirect(f'/flash_sales/v/{id}')
         else:
-            messages.error('Some fields are not correct')
+            messages.error(request, 'Some fields are not correct')
             context = {
                 'sale_form': sale_form,
                 'flashsale': flashsale
             }
-            return render(request, 'flashsales/flashsale.html', context)
+            return render(request, 'flashsales/flashsale_vendor.html', context)
         
     sale_form = SaleForm(instance=flashsale)
     context = {

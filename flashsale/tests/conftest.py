@@ -8,6 +8,7 @@ from vendor.models import Product, Vendor
 from datetime import datetime
 from kafka.producer import KafkaProducer
 from decouple import config
+import redis
 
 @pytest.fixture
 def customer(db):
@@ -47,6 +48,21 @@ def flash_sale(db, product, customer, vendor):
         total_qty = 10,
         to_time = datetime.now()
     )
+
+@pytest.fixture
+def flash_sale_redis(db, product, customer, vendor):
+    return FlashSale.objects.create(
+        vendor = vendor,
+        product = product,
+        new_price = 10.0,
+        total_qty = 10,
+        to_time = datetime.now()
+    )
+
+@pytest.fixture
+def redis_cli():
+    redis_cli = redis.Redis(config('REDIS_SERVER'))
+    return redis_cli
 
 @pytest.fixture
 def flash_order(db, customer, payment, flash_sale, product):

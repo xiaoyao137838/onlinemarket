@@ -1,9 +1,12 @@
 import os
 import socket
+import tempfile
+from accounts.models import User, UserProfile
 import pytest 
 from selenium import webdriver
 from pathlib import Path
 from selenium.webdriver.chrome.service import Service
+from vendor.models import Vendor
 
 
 @pytest.fixture(scope='session')
@@ -29,3 +32,20 @@ def browser(request):
 @pytest.fixture(scope='session')
 def base_url():
     return f'http://localhost:8000'
+
+@pytest.fixture
+def user(db):
+    return User.objects.create(username='xiaoyao', email='a@gmail.com', role=1)
+
+@pytest.fixture
+def user_profile(db, user):
+    profile = UserProfile.objects.get(user=user)
+    profile.cover_photo = tempfile.NamedTemporaryFile(suffix=".jpg").name
+    profile.user_pic = tempfile.NamedTemporaryFile(suffix=".jpg").name
+    profile.save()
+    return profile
+
+@pytest.fixture
+def vendor(db, user, user_profile):
+    print('db is:', db)
+    return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', slug_name='vendor_1')

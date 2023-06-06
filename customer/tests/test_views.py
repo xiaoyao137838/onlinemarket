@@ -56,6 +56,24 @@ def test_customer_profile_POST(user):
     response = customer_profile(request)
     assert response.status_code == 302
 
+def test_customer_profile_POST_invalid_form(user):
+    context = {
+        'user_pic': SimpleUploadedFile("file.pdf", b"file_content"),
+        'cover_photo': SimpleUploadedFile("file.jpg", b"file_content"),
+        'address': 'new address',
+        'email': 'cc@gmail.com'
+    }
+    path = reverse('customer_profile')
+    request = RequestFactory().post(path, context)
+    request.user = user
+
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)
+
+    response = customer_profile(request)
+    assert response.status_code == 200
+
 def test_customer_orders(user):
     path = reverse('customer_orders')
     request = RequestFactory().post(path)

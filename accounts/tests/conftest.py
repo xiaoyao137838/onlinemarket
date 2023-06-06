@@ -1,3 +1,4 @@
+from order.models import Order, Payment
 import pytest 
 from accounts.models import User, UserProfile
 from vendor.models import Vendor, Product, OpeningHour
@@ -28,3 +29,11 @@ def product(db, vendor):
 @pytest.fixture(scope='function')
 def opening_hour(db,vendor):
     return OpeningHour.objects.create(day=1, vendor=vendor)
+
+@pytest.fixture
+def payment(db, customer):
+    return Payment.objects.create(payment_no='pay_1', method='PayPal', customer=customer, amount=11.0, status='Completed')
+
+@pytest.fixture
+def order(db, customer, payment):
+    return Order.objects.create(first_name='geng', last_name='hong', order_no='order_1', customer=customer, sub_amount=10.0, tax_amount=1.0, total_amount=11.0, payment=payment, status='Completed')

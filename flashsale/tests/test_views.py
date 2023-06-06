@@ -5,6 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.messages.storage.fallback import FallbackStorage
 from flashsale.views import add_flashsale, delete_flashsale, flashsale, flashsale_customer, flashsale_vendor, flashsales, make_payment, select_flash_sale, checkout, make_order, pay_done, get_vendor
 from flashsale.models import FlashOrder
+from django.contrib.auth.models import AnonymousUser
 
 def test_get_vendor(user, vendor):
     request = RequestFactory()
@@ -43,10 +44,28 @@ def test_add_flashsale_POST(user, vendor, product):
     response = add_flashsale(request, product.id)
     assert response.status_code == 302
 
+def test_add_flashsale_POST_invalid_form(user, vendor, product):
+    path = reverse('add_flashsale', args=[product.id])
+    request = RequestFactory().post(path)
+    request.user = user
+    request.POST = {
+            'new_price': 10.0,
+            'to_time': datetime.now(),
+            'available_qty': 0
+    }
+
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages)    
+
+    response = add_flashsale(request, product.id)
+    assert response.status_code == 200
+
 def test_delete_flashsale(user, vendor, flash_sale):
     path = reverse('delete_flashsale', args=[flash_sale.id])
     request = RequestFactory().get(path)
     request.user = user
+    print('flash id:', flash_sale)
 
     setattr(request, 'session', 'session')
     messages = FallbackStorage(request)
@@ -97,13 +116,37 @@ def test_flashsale_vendor_POST(user, vendor, flash_sale):
     response = flashsale_vendor(request, flash_sale.id)
     assert response.status_code == 302
 
-def test_select_flash_sale(customer, flash_sale):
+def test_flashsale_vendor_POST_invalid_form(user, vendor, flash_sale):
+    context = {
+        'new_price': 10.0,
+        'to_time': datetime.now(),
+        'available_qty': 0
+    }
+    path = reverse('flashsale_vendor', args=[flash_sale.id])
+    request = RequestFactory().post(path, context)
+    request.user = user
+
+    setattr(request, 'session', 'session')
+    messages = FallbackStorage(request)
+    setattr(request, '_messages', messages) 
+    
+    response = flashsale_vendor(request, flash_sale.id)
+    assert response.status_code == 200
+
+def test_select_flash_sale(customer, flash_sale_redis):
     path = reverse('flash_select')
     request = RequestFactory().get(path)
+
+    request.user = AnonymousUser()
+    response = select_flash_sale(request)
+    assert response.status_code == 302
+
     request.user = customer
     request.GET = {
-        'flash_sale_id': flash_sale.id
+        'flash_sale_id': flash_sale_redis.id
     }
+    response = select_flash_sale(request)
+    assert response.status_code == 200
     
     request.headers = {}
     request.headers['x-requested-with'] = 'XMLHttpRequest'

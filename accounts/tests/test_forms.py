@@ -1,7 +1,9 @@
 import tempfile
+from django.forms import ValidationError
 from django.test import SimpleTestCase, TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from accounts.forms import UserForm, UserProfileForm, UserInfoForm
+import pytest
 
 class TestForms(TestCase):
 
@@ -44,6 +46,17 @@ class TestForms(TestCase):
         })
 
         self.assertTrue(form.is_valid())
+
+    def test_user_profile_form_invalid_pic(self):
+        form = UserProfileForm(data={
+            'address': 'new address'
+        },
+        files={
+            'user_pic': SimpleUploadedFile("file.pdf", b"file_content"),
+            'cover_photo': SimpleUploadedFile("file.pdf", b"file_content")
+        })
+
+        self.assertFalse(form.is_valid())
 
     def test_user_profile_form_init(self):
         form = UserProfileForm(data={
