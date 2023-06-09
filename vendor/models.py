@@ -6,7 +6,7 @@ from datetime import time, date, datetime
 
 # Create your models here.
 class Vendor(models.Model):
-    user = OneToOneField(User, on_delete=models.CASCADE)
+    user = OneToOneField(User, on_delete=models.CASCADE, related_name='vendor')
     profile = OneToOneField(UserProfile, on_delete=models.CASCADE)
     vendor_name = models.CharField(max_length=50)
     slug_name = models.SlugField(max_length=50, unique=True)

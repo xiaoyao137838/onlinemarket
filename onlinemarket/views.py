@@ -1,3 +1,5 @@
+import json
+from django.forms import model_to_dict
 from django.shortcuts import render
 from django.http import HttpResponse
 from vendor.models import Vendor
@@ -20,8 +22,15 @@ def home(request):
     else:
         vendors = Vendor.objects.filter(is_verified=True, user__is_active=True)[:6]
 
+    profiles = map(lambda vendor: model_to_dict(vendor.profile, fields=['address', 'longitude', 'latitude']), vendors)
+    profiles_json = json.dumps(list(profiles))
+    vendors_dict = vendors.values('vendor_name', 'slug_name')
+    vendors_json = json.dumps(list(vendors_dict))
+   
     context = {
         'vendors': vendors,
+        'profiles_json': profiles_json,
+        'vendors_json': vendors_json
     }
     return render(request, 'home.html', context)
 

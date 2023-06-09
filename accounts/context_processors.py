@@ -1,6 +1,6 @@
 from vendor.models import Vendor
 from .models import UserProfile
-from onlinemarket.settings import PAYPAL_CLIENT_ID, GOOGLE_API_KEY
+from onlinemarket.settings import PAYPAL_CLIENT_ID, GOOGLE_API_KEY, MAPBOX_TOKEN
 
 def get_vendor(request):
     try:
@@ -21,3 +21,6 @@ def get_google_api_key(request):
 
 def get_paypal_client_id(request):
     return {'PAYPAL_CLIENT_ID': PAYPAL_CLIENT_ID}
+
+def get_mapbox_token(request):
+    return {'MAPBOX_TOKEN': MAPBOX_TOKEN}

@@ -2,13 +2,15 @@
 {% load static %}
 {% block content %}
 <div class="main-section">
+  
+
   <!-- Home Pages Elements Strat -->
   <!-- Main Search Start -->
   <div
     class="page-section nopadding cs-nomargin main-search-bar"
     style="
       padding-top: 200px;
-      padding-bottom: 150px;
+      padding-bottom: 0px;
       margin-bottom: 0px;
       background: url(static/extra-images/main-logo.jpg) no-repeat center /
         cover;
@@ -87,6 +89,8 @@
       </div>
     </div>
   </div>
+    
+
   <!-- Main Search End -->
 
   <!-- Top Restarurants Section Start -->
@@ -94,15 +98,21 @@
     class="page-section nopadding cs-nomargin"
     style="
       margin-top: 0px;
-      padding-top: 60px;
+      padding-top: 30px;
       padding-bottom: 0px;
       margin-bottom: 0px;
       background: #ffffff;
+      display: flex;
+      justify-content: center;
     "
   >
+  
     <div class="container">
       <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div id="cluster-map" style="width: 100%; height: 500px;"></div>
+          <br>
+
           <div class="element-title align-left">
             <h2>Top services</h2>
             <p>Explore shops, restaurants, bars, and more</p>
@@ -209,4 +219,26 @@
 
   <!-- Home Pages Elements End  -->
 </div>
+
+<script>
+  const mapToken = '{{MAPBOX_TOKEN}}';
+  const profiles_data = {{profiles_json | safe}};
+  const vendors_data = {{vendors_json | safe}};
+  profiles_data.forEach((profile, i) => {
+    profile.geometry = {
+      type: 'Point',
+      coordinates: [parseFloat(profile.longitude), parseFloat(profile.latitude)]
+  }
+  profile.type = 'Feature';
+  profile.properties = {
+    name: vendors_data[i].vendor_name,
+    slug_name: vendors_data[i].slug_name
+  }
+  })
+  
+  const profiles = {features: profiles_data};
+  console.log('before: ', profiles)
+  </script>
+  <script src="{% static '/js/clusterMap.js' %}"></script>
+  
 {% endblock %}

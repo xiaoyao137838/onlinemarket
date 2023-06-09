@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import PermissionDenied
@@ -13,7 +14,7 @@ from order.forms import OrderForm
 from .context_processors import get_cart_counter, get_cart_amounts
 from accounts.views import check_role_customer
 from vendor.models import Vendor, Product, OpeningHour
-from .models import CartItem
+from .models import CartItem, Review
 from order.models import Order
 from datetime import date, datetime
 
@@ -58,14 +59,19 @@ def search(request):
     }
     return render(request, 'market/marketplace.html', context)
 
-def vendor_detail(request, vendor_slug):
-    vendor = get_object_or_404(Vendor, slug_name=vendor_slug)
-    products = Product.objects.filter(vendor=vendor)
+def all_opening_hours(vendor):
     opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day', 'from_time')
 
     today_date = date.today()
     today = today_date.isoweekday()
     current_opening_hours = OpeningHour.objects.filter(vendor=vendor, day=today).order_by('from_time')
+
+    return opening_hours, current_opening_hours
+
+def vendor_detail(request, vendor_slug):
+    vendor = get_object_or_404(Vendor, slug_name=vendor_slug)
+    products = Product.objects.filter(vendor=vendor)
+    opening_hours, current_opening_hours = all_opening_hours(vendor)
 
     user = request.user
     if user.is_authenticated:
@@ -74,14 +80,40 @@ def vendor_detail(request, vendor_slug):
     else: 
         cart_items = None
     
+    profile_dict = {
+        'address': vendor.profile.address,
+        'longitude': vendor.profile.longitude,
+        'latitude': vendor.profile.latitude
+    }
+    profile_json = json.dumps(profile_dict)
     context = {
         'vendor': vendor,
+        'profile_json': profile_json,
         'products': products,
         'opening_hours': opening_hours,
         'current_opening_hours': current_opening_hours,
         'cart_items': cart_items,
     }
     return render(request, 'market/vendor_detail.html', context)
+
+def product_detail(request, product_slug):
+    product = get_object_or_404(Product, slug_name=product_slug)
+    opening_hours, current_opening_hours = all_opening_hours(product.vendor)
+
+    if request.user.is_authenticated:
+        customer = get_customer(request)
+        cart_item = CartItem.objects.filter(customer=customer, product=product).first()
+    else:
+        Cart_item = None 
+
+    context = {
+        'product': product,
+        'vendor': product.vendor,
+        'opening_hours': opening_hours,
+        'current_opening_hours': current_opening_hours,
+        'item': cart_item,
+    }
+    return render(request, 'market/product_detail.html', context)
 
 @login_required(login_url='login')
 def cart(request):
@@ -197,3 +229,93 @@ def checkout(request):
         'order_form': order_form,
     }
     return render(request, 'market/checkout.html', context)
+
+
+def add_review(request):
+    user = request.user
+    if user.is_authenticated:
+        if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            
+            try:
+                posted_review = Review()
+                posted_review.author = user
+                product_id = request.POST['product_id']
+                
+                product = get_object_or_404(Product, id=product_id)
+                posted_review.product = product
+                posted_review.rating = request.POST['rating']
+                posted_review.comment = request.POST['comment']
+                try:
+                    posted_review.save()
+                    return JsonResponse({
+                        'status': 'success',
+                        'message': 'New review is added successfully.',
+                        'id': posted_review.id,
+                        'rating': posted_review.rating,
+                        'comment': posted_review.comment,
+                        'username': posted_review.author.username
+                    })
+                except Exception as e:
+                    return JsonResponse({
+                        'status': 'fail',
+                        'message': 'Cannot add the review.'
+                    })
+            except Exception as e:
+                return JsonResponse({
+                    'status': 'fail',
+                    'message': 'The product does not exist.'
+                })
+        else:
+            return JsonResponse({
+                'status': 'fail',
+                'message': 'Invalid request'
+            })
+    else:
+        return JsonResponse({
+            'status': 'fail',
+            'message': 'Please login first'
+        })
+
+def delete_review(request, review_id):
+    user = request.user
+    if user.is_authenticated:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            print('received request to delete review')
+            try:
+                review = get_object_or_404(Review, id=review_id)
+                print('To delete: ', review.id)
+                if review.author == user:
+                    try: 
+                        review.delete()
+                        return JsonResponse({
+                            'status': 'success',
+                            'message': 'This review is deleted successfully.',
+                            'id': review_id
+                        })
+                    except Exception as e:
+                        print(e)
+                        return JsonResponse({
+                            'status': 'fail',
+                            'message': 'Cannot delete this review.'
+                        })
+                else:
+                    return JsonResponse({
+                        'status': 'fail',
+                        'message': 'You have not authority to delete it.'
+                    })
+            except:
+                return JsonResponse({
+                    'status': 'fail',
+                    'message': 'This review does not exist.',
+                })
+        else:
+            return JsonResponse({
+                'status': 'fail',
+                'message': 'Invalid request'
+            })
+    else:
+        return JsonResponse({
+            'status': 'fail',
+            'message': 'Please login first'
+        })
+    

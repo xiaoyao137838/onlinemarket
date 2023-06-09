@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 <div class="main-section">
+
     <div class="page-section restaurant-detail-image-section" style=" background: url({{vendor.profile.cover_photo.url}}) no-repeat scroll 0 0 / cover;">
         <!-- Container Start -->
         <div class="container">
@@ -17,16 +18,18 @@
                                 </figure>
                             </div>
                             <div class="text-holder">
-                                <span class="restaurant-title">{{vendor}} {% if not vendor.is_open %}[Closed]{% endif %}</span>
+                                <span class="restaurant-title">{{vendor}}{% if not vendor.is_open %}[Closed]{% endif %}</span>
                                 {% if vendor.profile.address %}
                                 <div class="text">
                                     <i class="icon-location"></i>
                                     <p>{{vendor.profile.address}}</p>
                                 </div>
                                 {% endif %}
-                                <div class="text-holder mt-2">
+                                <span class="text-holder mt-2">
                                     <a href="{% url 'flashsales' vendor.slug_name %}" class="btn btn-success btn-sm">Flashsales</a>
-                                </div>
+                                    <a href="{% url 'user_page' vendor.user.id %}" class="btn btn-info btn-sm">Posts</a>
+                                </span>
+                                
                             </div>
                             
                         </div>
@@ -58,12 +61,13 @@
         </div>
         <!-- Container End -->
     </div>
-
+    
     <div class="page-section">
         <div class="container">
             <div class="row">
                 
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                
+                <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
                     <div class="tabs-holder horizontal">
                         <ul class="stickynav-tabs nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Menu</a></li>
@@ -81,7 +85,7 @@
                                         
                                                 <div class="image-holder"> <a href=""><img src="{{product.image.url}}" alt=""></a></div>
                                                 <div class="text-holder">
-                                                    <h6>{{product}}</h6>
+                                                    <a href="{% url 'product_detail' product.slug_name %}"><h6>{{product}}</h6></a>
                                                     <span>{{product.description}}</span>
                                                 </div>
                                                 <div class="price-holder">
@@ -105,9 +109,29 @@
                         </div>
                     </div>
                 </div>
-                
+                <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-location-arrow"></i>Shop Location</a></li>
+                        </ul>
+                    <div id='map' style='width: 100%; padding-bottom: 100%;'></div>
+
+                </div>
+
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+
+<script>
+const mapToken = '{{MAPBOX_TOKEN}}';
+const lng = '{{vendor.profile.longitude}}';
+const lat = '{{vendor.profile.latitude}}';
+const vendor_name = '{{vendor}}';
+const address = '{{vendor.profile.address}}';
+const dict = {{profile_json | safe}};
+console.log('dict is before: ', dict)
+console.log(lng, lat)
+</script>
+<script src="{% static '/js/showMap.js' %}"></script>
+{% endblock %} 

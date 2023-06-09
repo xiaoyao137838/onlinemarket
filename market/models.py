@@ -24,3 +24,9 @@ class Tax(models.Model):
 
     def __str__(self):
         return self.tax_type
+    
+class Review(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.SmallIntegerField(default=1)
+    comment = models.TextField(max_length=200)

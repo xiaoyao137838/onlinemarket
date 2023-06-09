@@ -1,0 +1,12 @@
+{% extends "boilerplate.html" %}
+
+{% block content %}
+<button class="btn btn-secondary m-5" onclick="history.back()"><i class="fa fa-angle-left" aria-hidden="true"></i> Back</button>
+<h3>Delete Post</h3>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h4>Are you sure you want to delete "{{post.title}}" ? </h4>
+    <button type="submit" class="btn btn-danger">Confirm delete</button>
+</form>
+
+{% endblock content %}

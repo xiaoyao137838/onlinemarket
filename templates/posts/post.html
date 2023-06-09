@@ -1,0 +1,78 @@
+{% extends "boilerplate.html" %}
+
+{% load custom_tags %}
+
+{% block content %}
+
+<div class="row single-post">
+    <div class="single-post-card view-update {{ post.pk }}">
+        <div class="header">
+            <a href="{% url 'user_page' post.user.pk %}" class="m-5">
+                {% if post.user.profile.user_pic %}
+                    <img class="picture-circle--medium" src="{{post.user.profile.user_pic.url}}">
+                {% endif %}
+                {{ post.user.username }}
+            </a>
+            
+            <div class="container d-flex justify-content-center align-items-center">
+                <div>
+                    {{ post.description }}
+                </div>
+                <br>
+                {% if user == post.user %}
+                <div>
+                    <a href="{% url 'edit_post' post.id %}">
+                    <button class="btn btn-primary btn-sm">Edit Post</button>
+                    </a>
+                    <a href="{% url 'delete_post' post.id %}">
+                        <button class="btn btn-danger btn-sm">Delete Post</button>
+                    </a>
+                </div>
+                {% endif %}
+                
+                
+            </div>
+     
+        </div>
+        <div class="image__wrapper">
+            
+            <img class="card__main-image" src="{{post.picture.url}}" >
+        </div>
+        <div class="comments-portion">
+            <div class="likes-timestamp-row">
+                <div class="likes">
+                    {% if post.get_like_count %}
+                        {{ post.get_like_count }} like{% if post.get_like_count > 1 %}s{% endif %}
+                    {% endif %}
+                </div>
+                <div class="timestamp">
+                    {{ post.created_at|timesince }}
+                </div>
+            </div>
+            <ul class="comment-list">
+                {% for comment in post.comments.all %}
+                <li class="comment-list__comment">
+                    <a href="{% url 'user_page' comment.user.pk %}" class="user">
+                        {{ comment.user.username }}
+                    </a>
+                    <span class="comment">{{ comment.content }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if user.is_authenticated %}
+            
+            <section class="input-row">
+                <i class="fa {% has_user_liked_post user post %} submit-like"></i>
+                <div class="comment-input-wrapper">
+                    <input class="add-comment" type="text" placeholder="Add a comment...">
+                </div>
+                <div class="hidden-data {{ post.pk }}" style="display: none;">
+                    <span class="post-pk">{{ post.pk }}</span>
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

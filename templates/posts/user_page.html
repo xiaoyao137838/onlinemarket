@@ -1,0 +1,87 @@
+{% extends 'boilerplate.html' %}
+
+{% load custom_tags %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="profile">
+
+    <div class="profile__head">
+        <div class="row">
+            <div class="col-xs-4 left">
+                
+                {% if object.profile.user_pic %}
+                    <img class="picture-circle" src="{{object.profile.user_pic.url}}">
+                {% endif %}
+            </div>
+            <div class="col-xs-8 right">
+                <div class="name-buttons">
+                    <h1 class="username mr-5">{{ object.username }}</h1>
+                    <br>
+                    {% if object.get_role == 'Vendor' %}
+                    <span class="ml-5">
+                         <a class="edit-desktop" href="{% url 'vendor_detail' object.vendor.slug_name %}">
+                            <button class="btn btn-primary ml-5">Visit Shop</button>
+                        </a>
+                    </span>
+                   
+                    {% endif %}
+                    {% if request.user == object %}
+                        {% if object.get_role == 'Vendor' %}
+                            <a class="edit-desktop" href="{% url 'vendor_profile' %}">
+                                <button class="edit-profile">Edit Profile</button>
+                            </a>
+                        {% elif object.get_role == 'Customer' %}
+                        <span>
+                            <a class="edit-desktop" href="{% url 'customer_profile' %}">
+                                <button class="edit-profile">Edit Profile</button>
+                            </a>
+                        </span>    
+                        {% endif %}
+                    {% elif request.user.is_authenticated %}
+                    <span class="follow-toggle__container m-5">
+                        {% is_followed_by_visitor object request.user as following %}
+                        {% if following %}
+                        <button class="btn btn-primary unfollow-user" id="{{ object.pk }}">Unfollow</button>
+                        {% else %}
+                        <button class="btn btn-primary follow-user" id="{{ object.pk }}">Follow</button>
+                        {% endif %}
+                    </span>
+                        
+                    {% endif %}
+                    
+                </div>
+
+                <div>
+                    <ul class="stats">
+                        <div class="col-xs-4"><li class="stats__count"><span>{{ object.posts.count }}</span><br> posts</li></div>
+                        <div class="col-xs-4"><a href="/" style="text-decoration: none; color: black;"><li class="stats__count"><span class="follower_count" id="follower_id">{{ object.friendship_set.count }}</span><br> followers</li></a></div>
+                        <div class="col-xs-4"><a href="/" style="text-decoration: none; color: black;"><li class="stats__count"><span>{{ object.friendship_creator_set.count }}</span><br> following</li></a></div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile__body">
+        <div class="row">
+        {% for post in object.posts.all %}
+            <div class="col-xs-4">
+                <div class="picture-square" style="background-image: url('{{ post.picture.url }}'); background-size: contain">
+                    <a href="{% url 'post' post.pk %}">
+                    <div class="content">
+                        <i class="fa fa-heart" aria-hidden="true"></i> {{ post.get_like_count }}
+                        <i class="fa fa-comment" aria-hidden="true"></i> {{ post.get_comment_count }}
+                    </div>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}

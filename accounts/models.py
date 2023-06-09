@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 from django.db.models.fields.related import OneToOneField
 from django.contrib.gis.db import models as gismodels
 from django.contrib.gis.geos import Point
+from django.urls import reverse
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -76,12 +77,15 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
     
+    def get_absolute_url(self):
+        return reverse('user_page', args=[str(self.id)])
+    
     @property
     def is_staff(self):
         return self.is_admin
     
 class UserProfile(models.Model):
-    user = OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True, related_name='profile')
     user_pic = models.ImageField(upload_to='users/user_profiles', blank=True, null=True)
     
     cover_photo = models.ImageField(upload_to='users/cover_photos', blank=True, null=True)
@@ -103,3 +107,5 @@ class UserProfile(models.Model):
         if self.latitude and self.longitude:
             self.location = Point(float(self.longitude), float(self.latitude))
         return super(UserProfile, self).save(*args, **kwargs)
+    
+

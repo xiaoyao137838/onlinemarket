@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'order',
     'django.contrib.gis',
     'flashsale',
+    'postsharing',
 ]
 
 MIDDLEWARE = [
@@ -78,6 +79,7 @@ TEMPLATES = [
                 'market.context_processors.get_cart_amounts',
                 'accounts.context_processors.get_paypal_client_id',
                 'accounts.context_processors.get_google_api_key',
+                'accounts.context_processors.get_mapbox_token',
                 'flashsale.context_processors.flash_sale_order',
             ],
         },
@@ -176,6 +178,8 @@ DEFAULT_FROM_EMAIL = 'onlinemarket <xiaoyao61030@outlook.com>'
 GOOGLE_API_KEY = config('GOOGLE_API_KEY')
 
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
+
+MAPBOX_TOKEN = config('MAPBOX_TOKEN')
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 

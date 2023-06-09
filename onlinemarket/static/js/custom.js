@@ -271,4 +271,88 @@ $(document).ready(function(){
             }
         })
     })
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrfToken = getCookie('csrftoken')
+
+    $(document).on('submit', '.add-review', function(e) {
+        e.preventDefault();
+        const stars = document.querySelectorAll('input[type=radio]');
+        let rating = 1;
+        for (let star of stars) {
+            if (star.checked) {
+                rating = star.getAttribute('value');
+                break;
+            }
+        }
+        const comment = document.querySelector('#comment');
+        const url = $(this).attr('data-url');
+        const product_id = $(this).attr('data-id');
+        if (comment.value != '') {
+            $.ajax({
+                type: 'POST',
+                url,
+                data: {
+                    rating,
+                    comment: comment.value,
+                    'csrfmiddlewaretoken': csrfToken,
+                    'product_id': product_id
+                },
+                success: updateReviewsAfterCreation,
+                error: handleError
+            })
+        }
+    })
+
+    function handleError(error) {
+        console.log(error);
+    }
+
+    function updateReviewsAfterCreation(response) {
+        console.log(response)
+        if (response.status == 'success') {
+            const { id, rating, comment, username } = response;
+            const url = '/market/delete_reivew/' + id;
+            html = `<div class="card mt-3" id="review-${id}"><div class="card-body"><div><p class="starability-result" data-rating="${rating}"></p><span><b>${username}</b> - ${comment}</span></div><div class="d-inline delete-review" data-url="${url}"><a href="${url}"><button class="btn btn-danger">Delete</button></a></div></div></div>`;
+    
+            $('.review-list').append(html);
+            const commentEle = document.getElementById('comment');
+            commentEle.value = '';
+        } else {
+            handleError(response.message);
+        }
+    }
+
+    $(document).on('click', '.delete-review', function(e) {
+        e.preventDefault();
+        url = $(this).attr('data-url');
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response) {
+                console.log(response)
+                if (response.status == 'success') {
+                    const element = document.getElementById('review-'+response.id);
+                    element.remove();
+                } else {
+                    swal(response.message, '', 'error');
+                }
+            }
+        })
+    })
 })
