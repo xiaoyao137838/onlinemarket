@@ -11,12 +11,17 @@ from .forms import SaleForm, SaleOrderForm
 from .utils import generate_order_no, get_role_url
 from django.contrib import messages
 from datetime import datetime, date
-from .kafka.kafka_service import producer
 from .redis_service import add_customer_to_limit, add_sale, create_flashsale, add_stock, is_customer_qualified, lock_stock
 from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.views import check_role_vendor
 import json
 import threading
+
+try:
+    from flashsale.kafka.kafka_service import producer
+except:
+    print('Producer does not exist')
+    
 
 # Create your views here.
 
@@ -86,6 +91,9 @@ def flashsale(request, id):
 @user_passes_test(check_role_vendor) 
 def flashsale_vendor(request, id):
     flashsale = get_object_or_404(FlashSale, id=id)
+    if flashsale.vendor.user != request.user:
+        return redirect(f'/flash_sales/c/{id}')
+    
     if request.method == 'POST':
         sale_form = SaleForm(request.POST, instance=flashsale)
 

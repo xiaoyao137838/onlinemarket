@@ -85,6 +85,7 @@ def products(request):
     products = Product.objects.filter(vendor=vendor).order_by('created_at')
     flashsales = FlashSale.objects.filter(vendor=vendor)
     products_flashsales = flashsales.values_list('product', flat=True)
+
     for product in products:
         if product.id in products_flashsales:
             product.flashsale = flashsales.get(product=product.id)
@@ -185,6 +186,7 @@ def add_opening_hour(request):
                     
                 opening_hour = OpeningHour.objects.create(vendor=vendor, day=day, from_time=from_time, to_time=to_time, is_closed=is_closed)
                 current_opening_hour = OpeningHour.objects.get(vendor=vendor, day=day, from_time=from_time, to_time=to_time, is_closed=is_closed)
+                
                 if current_opening_hour:
                     if current_opening_hour.is_closed:
                         response = {

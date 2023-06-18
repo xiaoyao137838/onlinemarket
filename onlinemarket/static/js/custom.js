@@ -327,11 +327,11 @@ $(document).ready(function(){
         if (response.status == 'success') {
             const { id, rating, comment, username } = response;
             const url = '/market/delete_reivew/' + id;
-            html = `<div class="card mt-3" id="review-${id}"><div class="card-body"><div><p class="starability-result" data-rating="${rating}"></p><span><b>${username}</b> - ${comment}</span></div><div class="d-inline delete-review" data-url="${url}"><a href="${url}"><button class="btn btn-danger">Delete</button></a></div></div></div>`;
+            html = `<div class="card" id="review-${id}" style="margin-bottom: auto;"><div class="card-body"><div><p class="starability-result" data-rating="${rating}"></p><span><b>${username}</b> - ${comment}</span></div><div class="d-inline delete-review" data-url="${url}"><a href="${url}"><button class="btn btn-danger btn-sm  mt-2">Delete</button></a></div></div></div>`;
     
             $('.review-list').append(html);
-            const commentEle = document.getElementById('comment');
-            commentEle.value = '';
+            const form = document.querySelector('.add-review');
+            form.reset();
         } else {
             handleError(response.message);
         }
