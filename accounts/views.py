@@ -15,7 +15,6 @@ from django.contrib.auth.tokens import default_token_generator
 import simplejson as json
 from datetime import datetime
 
-
 # Create your views here.
 def register_user(request):
     if request.user.is_authenticated:

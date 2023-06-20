@@ -67,10 +67,8 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     login_url = 'login'
     success_url = reverse_lazy('posts')
 
-
-@login_required(login_url='login')  
 def add_comment(request):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    if request.user.is_authenticated and request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         post_id = request.POST['post_id']
         content = request.POST['content']
         comment_info = {}
@@ -94,9 +92,9 @@ def add_comment(request):
             'comment_info': comment_info,
         })
 
-@login_required(login_url='login')  
+
 def add_like(request):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    if request.user.is_authenticated and request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         post_id = request.POST['post_id']
         post = get_object_or_404(Post, id=post_id)
         try: 
@@ -112,10 +110,9 @@ def add_like(request):
             'result': result,
             'post_id': post_id,
         })
-
-@login_required(login_url='login')  
+ 
 def toggle_follow_unfollow(request):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    if request.user.is_authenticated and request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         user_id = request.POST['user_id']
         type = request.POST['type']
         owner = get_object_or_404(User, id=user_id)

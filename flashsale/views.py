@@ -22,7 +22,6 @@ try:
 except:
     print('Producer does not exist')
     
-
 # Create your views here.
 
 def get_vendor(request):
@@ -241,7 +240,7 @@ def make_order(request, id):
 
             return render(request, 'flashsales/place_order.html', context)
         else: 
-            messages.error('Some fields are not correct')
+            messages.error(request, 'Some fields are not correct')
             context = {
                 'order_form': order_form
             }

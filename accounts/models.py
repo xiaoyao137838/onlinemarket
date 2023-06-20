@@ -78,7 +78,7 @@ class User(AbstractBaseUser):
         return True
     
     def get_absolute_url(self):
-        return reverse('user_page', args=[str(self.id)])
+        return reverse('user_page', args=[str(self.id)]) # type: ignore
     
     @property
     def is_staff(self):
