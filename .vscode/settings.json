@@ -1,7 +1,12 @@
 {
-    "liveServer.settings.port": 5501,
-    "python.analysis.extraPaths": [
-        "./flashsale/kafka",
-        "./flashsale"
-    ]
+  "liveServer.settings.port": 5501,
+  "python.analysis.extraPaths": ["./flashsale/kafka", "./flashsale"],
+  "python.analysis.typeCheckingMode": "basic",
+  "python.linting.pylintArgs": [
+    "--load-plugins=pylint_django",
+    "--generated-members"
+    // "from_json,query"
+  ],
+
+  "[python]": {}
 }

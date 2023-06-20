@@ -50,7 +50,7 @@ def search(request):
         vendors = vendors.filter(profile__location__distance_lte=(pnt, D(km=radius))).annotate(distance=Distance("profile__location", pnt)).order_by("distance")
 
         for vendor in vendors:
-            vendor.kms = round(vendor.distance.km, 1)
+            vendor.kms = round(vendor.distance.km, 1) # type: ignore
 
     context = {
         'vendors': vendors,
@@ -133,7 +133,7 @@ def add_cart(request, product_id):
                 product = Product.objects.get(id=product_id)
                 try:
                     cart_item = CartItem.objects.get(customer=customer, product=product)
-                    cart_item.quantity += 1
+                    cart_item.quantity += 1 # type: ignore
                     cart_item.save()
                     return JsonResponse({'status': 'success', 'message': 'Product is added to cart', 'cart_counter': get_cart_counter(request), 'cart_product_qty': cart_item.quantity, 'amounts': get_cart_amounts(request)})
                 except:

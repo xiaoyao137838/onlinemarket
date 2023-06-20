@@ -17,8 +17,8 @@ urlpatterns = [
     path('edit_post/<pk>/', PostUpdateView.as_view(), name='edit_post'),
     path('delete_post/<pk>', PostDeleteView.as_view(), name='delete_post'),
 
-    path('add_comment/', add_comment, name='add_comment'),
-    path('add_like/', add_like, name='add_like'),
-    path('toggle_connection/', toggle_follow_unfollow, name='toggle_connection'),
+    path('add_comment/', add_comment, name='add_comment'), # type: ignore
+    path('add_like/', add_like, name='add_like'), # type: ignore
+    path('toggle_connection/', toggle_follow_unfollow, name='toggle_connection'), # type: ignore
 
 ]

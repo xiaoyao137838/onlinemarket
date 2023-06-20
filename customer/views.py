@@ -60,7 +60,7 @@ def customer_order(request, order_no):
         customer = get_customer(request)
         order = Order.objects.get(order_no=order_no, status='Completed', customer=customer)
         ordered_items = OrderedItem.objects.filter(order=order)
-        tax_data = json.loads(order.tax_data)
+        tax_data = json.loads(order.tax_data) # type: ignore
         
         context = {
             'order': order,
