@@ -23,10 +23,10 @@ from flashsale.utils import generate_order_no
 import json
 import logging
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__file__)
 
-print('customer for loop 1')
+logger.info('customer for loop 1')
 if __name__ == '__main__':
     for message in consumer_1:
         data = message.value
@@ -39,15 +39,15 @@ if __name__ == '__main__':
         except:
             try:
                 flash_sale = FlashSale.objects.get(id=flash_sale_id)
-                print('flash sale: ', flash_sale)
+                logger.info('flash sale: ', flash_sale)
                 product = flash_sale.product
                 sub_amount = flash_sale.new_price
                 tax_obj = Tax.objects.get(tax_type='Tax')
                 tax_amount = sub_amount * float(tax_obj.percentage) / 100
                 tax_data = {tax_obj.tax_type: { str(tax_obj.percentage): tax_amount }}
                 total_amount = sub_amount + tax_amount
-                print('before locked ', flash_sale.locked_qty)
-                print('before available ', flash_sale.available_qty)
+                logger.info('before locked {}', flash_sale.locked_qty)
+                logger.info('before available {}', flash_sale.available_qty)
 
                 if flash_sale.available_qty <= 0:
                     status = -1
@@ -69,9 +69,9 @@ if __name__ == '__main__':
                 )
                 flash_order.order_no = generate_order_no(flash_order)
                 flash_order.save()
-                print('after locked ', flash_sale.locked_qty)
-                print('after available ', flash_sale.available_qty)
-                print('create_order is consumed by message queue')    
+                logger.info('after locked {}', flash_sale.locked_qty)
+                logger.info('after available {}', flash_sale.available_qty)
+                logger.info('create_order is consumed by message queue')    
     
             except:
                 logger.error('This flashsale does not exist')

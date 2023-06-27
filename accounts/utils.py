@@ -6,6 +6,9 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 def check_role_vendor(user):
     if user.role == 1:
@@ -39,26 +42,22 @@ def send_email_activation(request, user, mail_subject, email_template):
     message = EmailMessage(subject=mail_subject, body=body, from_email=from_email, to=[user.email])
     message.content_subtype = 'html'
     message.send()
-    print(user.email)
+    logger.info("The user email is {}", user.email)
     
 def send_notification(mail_subject, mail_template, context):
-    print('in the send function', mail_subject)
-    print('template', mail_template)
-    print('context', context)
     from_email = settings.DEFAULT_FROM_EMAIL
-    print(from_email)
+    logger.info("The from email is {}", from_email)
     message = render_to_string(mail_template, context)
-    
-    print(message)
+    logger.info("The message is {}", message)
 
     if (isinstance(context['to_email'], str)):
         to_email = []
         to_email.append(context['to_email'])
     else:
         to_email = context['to_email']
-    print(to_email)
+    logger.info("The to email is {}", to_email)
     # mail = EmailMessage(mail_subject, message, from_email, to_email)
     mail = EmailMessage(subject=mail_subject, body=message, from_email=from_email, to=to_email)
-    print('mail: ', mail)
+    logger.info('mail: {}', mail)
     mail.content_subtype = 'html'
     mail.send()

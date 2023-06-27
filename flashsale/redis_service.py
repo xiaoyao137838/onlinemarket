@@ -3,10 +3,13 @@ import json
 from vendor.models import OpeningHour
 from django.forms.models import model_to_dict
 from decouple import config
+import logging
 
-print(config('REDIS_SERVER'))
+logger = logging.getLogger(__name__)
+
+logger.info(config('REDIS_SERVER'))
 redis_cli = redis.Redis(config('REDIS_SERVER'))
-print('Redis is started')
+logger.info('Redis is started')
 
 def create_flashsale(request, flashsale):
     add_vendor(request, flashsale)
@@ -73,7 +76,7 @@ def lock_stock(flashsale_id):
         try:
             pipe.watch(key)
             count = pipe.get(key)
-            print('pipe created', count)
+            logger.info('pipe created', count)
 
             if count <= b"0":
                 pipe.unwatch()
@@ -84,7 +87,7 @@ def lock_stock(flashsale_id):
                 pipe.execute()
                 return True
         except redis.WatchError:
-            print('retrying...')
+            logger.info('retrying...')
     
 def reverse_stock(flashsale_id):
     key = f'flash.stock:{flashsale_id}'

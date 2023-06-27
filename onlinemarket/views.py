@@ -7,8 +7,12 @@ from vendor.models import Vendor
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
+import logging
+
+newLog = logging.getLogger(__name__)
 
 def home(request):
+    newLog.info('This is the home page! %s', newLog.level)
     current_location_info = get_or_set_current_location(request)
     if current_location_info:
         lat, lng = current_location_info

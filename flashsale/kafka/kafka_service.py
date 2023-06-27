@@ -2,9 +2,12 @@ from kafka.producer import KafkaProducer
 from kafka.consumer import KafkaConsumer
 from decouple import config
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 producer = KafkaProducer(bootstrap_servers=config('KAFKA_SERVER'))
-print('Message queue is started', producer)
+logger.info('Message queue is started', producer)
 
 def key_deserializer(key):
     return key.decode('utf-8')

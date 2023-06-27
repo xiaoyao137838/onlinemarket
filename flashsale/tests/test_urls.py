@@ -1,6 +1,9 @@
 import pytest
 from flashsale.views import add_flashsale, delete_flashsale, flashsale, flashsale_customer, flashsale_vendor, flashsales, make_payment, select_flash_sale, checkout, make_order, pay_done
 from django.urls import reverse, resolve
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TestUrls:
     def test_flashsales(self):
@@ -37,16 +40,16 @@ class TestUrls:
 
     def test_flash_make_order(self):
         path = reverse('flash_make_order', args=[1])
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == make_order
 
     def test_flash_make_payment(self):
         path = reverse('flash_make_payment')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == make_payment
     
     def test_flash_pay_done(self):
         path = reverse('flash_pay_done')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == pay_done
 

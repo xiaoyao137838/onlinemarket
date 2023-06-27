@@ -2,6 +2,9 @@ import tempfile
 from django.test import SimpleTestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from vendor.forms import VendorForm, ProductForm, OpeningHourForm
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TestForms(SimpleTestCase):
 
@@ -36,7 +39,7 @@ class TestForms(SimpleTestCase):
     def test_product_form_no_dada(self):
         form = ProductForm(data={})
         for error in form.errors:
-            print(error)
+            logger.error(error)
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 3)
 
@@ -50,6 +53,6 @@ class TestForms(SimpleTestCase):
     def test_opening_hour_form_no_dada(self):
         form = OpeningHourForm(data={})
         for error in form.errors:
-            print(error)
+            logger.error(error)
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)

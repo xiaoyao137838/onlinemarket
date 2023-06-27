@@ -10,7 +10,9 @@ from .forms import OrderForm
 from market.models import CartItem, Tax
 from datetime import datetime
 import simplejson as json
+import logging
 
+logger = logging.getLogger(__name__)
 # Create your views here.
 @login_required(login_url='login')
 def place_order(request):
@@ -156,7 +158,8 @@ def make_payment(request):
                 'order_no': order.order_no,
                 'transaction_id': transaction_id,
             })
-        except:
+        except Exception as e: 
+            logger.error(e)
             return JsonResponse({
             'status': 'failed',
             'message': 'This order does not exist.',
@@ -186,7 +189,7 @@ def payment_complete(request):
         }
         return render(request, 'order/payment_complete.html', context)
 
-    # except:
-    #     return redirect('home')
-    finally:
-        print('0')
+    except Exception as e:
+        logger.error(e)
+        return redirect('home')
+

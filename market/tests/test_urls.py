@@ -1,15 +1,18 @@
 from django.urls import reverse, resolve
 from market.views import marketplace, vendor_detail, add_cart, deduce_cart, remove_cart
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TestUrls:
     def test_marketplace(self):
         path = reverse('marketplace')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == marketplace
 
     def test_vendor_detail(self):
         path = reverse('vendor_detail', args=['slug-name'])
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == vendor_detail
 
     def test_add_cart(self):

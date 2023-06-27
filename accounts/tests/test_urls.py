@@ -1,5 +1,8 @@
 from django.urls import reverse, resolve
 from accounts.views import dashboard, customer_dashboard, vendor_dashboard, register_user, register_vendor, login, logout, activate, password_reset_request, password_reset_validator, password_reset
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TestUrls:
     def test_account(self):
@@ -41,17 +44,17 @@ class TestUrls:
 
     def test_dashboard(self):
         path = reverse('dashboard')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == dashboard
     
     def test_customer_dashboard(self):
         path = reverse('customer_dashboard')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == customer_dashboard
 
     def test_vendor_dashboard(self):
         path = reverse('vendor_dashboard')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == vendor_dashboard
 
 

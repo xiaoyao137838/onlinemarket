@@ -6,6 +6,9 @@ from django.contrib.messages.storage.fallback import FallbackStorage
 from flashsale.views import add_flashsale, delete_flashsale, flashsale, flashsale_customer, flashsale_vendor, flashsales, make_payment, select_flash_sale, checkout, make_order, pay_done, get_vendor
 from flashsale.models import FlashOrder
 from django.contrib.auth.models import AnonymousUser
+import logging
+
+logger = logging.getLogger(__name__)
 
 def test_get_vendor(user, vendor):
     request = RequestFactory()
@@ -65,7 +68,7 @@ def test_delete_flashsale(user, vendor, flash_sale):
     path = reverse('delete_flashsale', args=[flash_sale.id])
     request = RequestFactory().get(path)
     request.user = user
-    print('flash id:', flash_sale)
+    logger.info('flash id: {}', flash_sale)
 
     setattr(request, 'session', 'session')
     messages = FallbackStorage(request)

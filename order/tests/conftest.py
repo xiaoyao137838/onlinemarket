@@ -3,6 +3,9 @@ import pytest
 from accounts.models import User, UserProfile
 from order.models import Order, OrderedItem, Payment
 from vendor.models import Product, Vendor
+import logging
+
+logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def customer(db):
@@ -18,7 +21,7 @@ def user_profile(db, user):
 
 @pytest.fixture
 def vendor(db, user, user_profile):
-    print('db is:', db)
+    logger.info('db is: {}', db)
     return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', slug_name='slug')
 
 @pytest.fixture

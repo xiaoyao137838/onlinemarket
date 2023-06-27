@@ -17,12 +17,16 @@ from vendor.models import Vendor, Product, OpeningHour
 from .models import CartItem, Review
 from order.models import Order
 from datetime import date, datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 def get_customer(request):
     return request.user
 
 def marketplace(request):
+    logger.info('This is to show the vendor list.')
     vendors = Vendor.objects.filter(is_verified=True, user__is_active=True)
     vendor_count = vendors.count()
 
@@ -136,10 +140,12 @@ def add_cart(request, product_id):
                     cart_item.quantity += 1 # type: ignore
                     cart_item.save()
                     return JsonResponse({'status': 'success', 'message': 'Product is added to cart', 'cart_counter': get_cart_counter(request), 'cart_product_qty': cart_item.quantity, 'amounts': get_cart_amounts(request)})
-                except:
+                except Exception as e:
+                    logger.error(e)
                     cart_item = CartItem.objects.create(customer=customer, product=product, quantity=1)
                     return JsonResponse({'status': 'success', 'message': 'New cart item created', 'cart_counter': get_cart_counter(request), 'cart_product_qty': cart_item.quantity, 'amounts': get_cart_amounts(request)})
-            except:
+            except Exception as e:
+                logger.error(e)
                 return JsonResponse({'status': 'failed', 'message': 'This product does not exist'})
         else:
             return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
@@ -164,9 +170,11 @@ def deduce_cart(request, product_id):
                         cart_item.quantity = 0
                         return JsonResponse({'status': 'success', 'message': 'Product is deduced from cart', 'cart_counter': get_cart_counter(request), 'cart_product_qty': cart_item.quantity, 'amounts': get_cart_amounts(request)})
                     
-                except:
+                except Exception as e:
+                    logger.error(e)
                     return JsonResponse({'status': 'failed', 'message': 'This product is not in cart', 'cart_counter': get_cart_counter(request), 'cart_product_qty': 0})
-            except:
+            except Exception as e:
+                logger.error(e)
                 return JsonResponse({'status': 'failed', 'message': 'This product does not exist'})
         else:
             return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
@@ -187,7 +195,8 @@ def remove_cart(request, cart_id):
                         'cart_counter': get_cart_counter(request),
                         'amounts': get_cart_amounts(request),
                     })
-                except:
+                except Exception as e:
+                    logger.error(e)
                     return JsonResponse({
                         'status': 'failed',
                         'message': 'Cart item does not exist in the cart',
@@ -256,11 +265,13 @@ def add_review(request):
                         'username': posted_review.author.username
                     })
                 except Exception as e:
+                    logger.error(e)
                     return JsonResponse({
                         'status': 'fail',
                         'message': 'Cannot add the review.'
                     })
             except Exception as e:
+                logger.error(e)
                 return JsonResponse({
                     'status': 'fail',
                     'message': 'The product does not exist.'
@@ -280,10 +291,10 @@ def delete_review(request, review_id):
     user = request.user
     if user.is_authenticated:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            print('received request to delete review')
+            logger.info('received request to delete review')
             try:
                 review = get_object_or_404(Review, id=review_id)
-                print('To delete: ', review.id)
+                logger.info('To delete: {}', review.id)
                 if review.author == user:
                     try: 
                         review.delete()
@@ -293,7 +304,7 @@ def delete_review(request, review_id):
                             'id': review_id
                         })
                     except Exception as e:
-                        print(e)
+                        logger.error(e)
                         return JsonResponse({
                             'status': 'fail',
                             'message': 'Cannot delete this review.'
@@ -303,7 +314,8 @@ def delete_review(request, review_id):
                         'status': 'fail',
                         'message': 'You have not authority to delete it.'
                     })
-            except:
+            except Exception as e:
+                logger.error(e)
                 return JsonResponse({
                     'status': 'fail',
                     'message': 'This review does not exist.',

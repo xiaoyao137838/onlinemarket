@@ -1,6 +1,9 @@
 from django.urls import reverse, resolve
 from customer.views import customer_profile, customer_order, customer_orders
 from accounts.views import customer_dashboard
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TestUrls:
     def test_customer_dashboard(self):
@@ -9,15 +12,15 @@ class TestUrls:
 
     def test_customer_profile(self):
         path = reverse('customer_profile')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == customer_profile
 
     def test_customer_orders(self):
         path = reverse('customer_orders')
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == customer_orders
     
     def test_customer_order(self):
         path = reverse('customer_order', args=[1])
-        print('path is: ', path)
+        logger.info('path is: {}', path)
         assert resolve(path).func == customer_order

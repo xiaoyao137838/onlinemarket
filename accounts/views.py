@@ -14,6 +14,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 import simplejson as json
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 def register_user(request):
@@ -33,7 +36,7 @@ def register_user(request):
             messages.success(request, 'Successfully registered!')
             return redirect('login')
         else:
-            print(form.errors)
+            logger.error(form.errors)
             context = {
                 'form': form,
             }
@@ -90,7 +93,8 @@ def activate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User._default_manager.get(id=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        logger.error(e)
         user = None
 
     if user and default_token_generator.check_token(user, token):
@@ -142,7 +146,8 @@ def password_reset_request(request):
             # send_email_activation(request, user, mail_subject=mail_subject, email_template='emails/email_password_reset.html')
             messages.success(request, 'Email sent successfully for password reset')
             return redirect('login')
-        except:
+        except Exception as e:
+            logger.error(e)
             messages.error(request,'Account does not exist')
     
     form = UserForm()
@@ -155,7 +160,8 @@ def password_reset_validator(request, uid, token):
     try:
         uid = urlsafe_base64_decode(uid).decode()
         user = User._default_manager.get(id=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        logger.error(e)
         user = None
 
     if user and default_token_generator.check_token(user, token):

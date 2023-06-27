@@ -11,6 +11,9 @@ from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.views import check_role_vendor
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 def get_vendor(request):
@@ -74,7 +77,8 @@ def vendor_order(request, order_no):
             'grand_total': order.get_total_by_vendor()['total'],
         }
         return render(request, 'vendors/vendor_order.html', context)
-    except:
+    except Exception as e:
+        logger.error(e)
         return redirect('vendor_orders')
  
 
@@ -206,6 +210,7 @@ def add_opening_hour(request):
                     return JsonResponse(response)
           
             except IntegrityError as e:
+                logger.error(e)
                 response = {
                     'status': 'failed',
                     'message': from_time + '-' + to_time + ' already exists for this day'

@@ -2,6 +2,9 @@ import pytest
 from accounts.models import User, UserProfile
 from vendor.models import Vendor, Product, OpeningHour
 import tempfile
+import logging
+
+logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def user(db):
@@ -13,14 +16,14 @@ def user_profile(db, user):
 
 @pytest.fixture
 def vendor(db, user, user_profile):
-    print('db is:', db)
+    logger.info('db is: {}', db)
     return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', verified_file=tempfile.NamedTemporaryFile(suffix=".jpg").name, slug_name='vendor_1')
 
 
 @pytest.fixture(scope='function')
 def product(db, vendor):
     product = Product.objects.create(name='product_1', price=10, vendor=vendor, image=tempfile.NamedTemporaryFile(suffix=".jpg").name)
-    print('product image: ', product.image)
+    logger.info('product image: {}', product.image)
     return product
 
 @pytest.fixture(scope='function')

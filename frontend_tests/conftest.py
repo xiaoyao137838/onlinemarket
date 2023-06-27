@@ -7,7 +7,9 @@ from selenium import webdriver
 from pathlib import Path
 from selenium.webdriver.chrome.service import Service
 from vendor.models import Vendor
+import logging
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope='session')
 def browser(request):
@@ -47,5 +49,5 @@ def user_profile(db, user):
 
 @pytest.fixture
 def vendor(db, user, user_profile):
-    print('db is:', db)
+    logger.info('db is: {}', db)
     return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', slug_name='vendor_1')

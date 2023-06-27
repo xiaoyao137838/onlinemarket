@@ -1,7 +1,9 @@
 import os
 import sys
 import django
+import logging
 
+logger = logging.getLogger(__name__)
 module_path = os.path.abspath(os.getcwd() + '\\')
 
 path_folder = os.path.abspath(os.getcwd() + '\\flashsale')
@@ -18,7 +20,7 @@ from flashsale.kafka.kafka_service import consumer_2
 from flashsale.models import FlashSale, FlashOrder
 from flashsale.redis_service import remove_customer_to_limit, reverse_stock
 
-print('customer for loop 2')
+logger.info('customer for loop 2')
 if __name__ == '__main__':
     for message in consumer_2:
         data = message.value
@@ -27,7 +29,7 @@ if __name__ == '__main__':
         try:
             flash_order = FlashOrder.objects.get(customer=customer_id, flash_sale=flash_sale_id, status__in=[0, 1])
             flash_sale = FlashSale.objects.get(id=flash_sale_id)
-            print('available: ', flash_sale.available_qty)
+            logger.info('available: {}', flash_sale.available_qty)
 
             if flash_order.status != 1:
                 flash_order.status = 2
@@ -37,11 +39,13 @@ if __name__ == '__main__':
                 flash_sale.save()
                 try:
                     reverse_stock(flash_sale_id)
-                except:
-                    print('reverse is not successful')
+                except Exception as e:
+                    logger.info('reverse is not successful')
+                    logger.error(e)
                 remove_customer_to_limit(customer_id, flash_sale_id)
-                print('after available: ', flash_sale.available_qty)
-            print('check_pay_status is consumed by message queue')
-        except:
-            print('No such flash order found')
+                logger.info('after available: {}', flash_sale.available_qty)
+            logger.info('check_pay_status is consumed by message queue')
+        except Exception as e:
+            logger.info('No such flash order found')
+            logger.error(e)
    
