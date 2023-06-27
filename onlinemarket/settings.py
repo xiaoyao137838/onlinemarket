@@ -207,6 +207,7 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
+        
     },
     "loggers": {
         "onlinemarket": {
@@ -246,12 +247,12 @@ LOGGING = {
         },
         "flashsale": {
             "level": "DEBUG",
-            'propagate': True,
+            "propagate": True,
             "handlers": ["console"],
         },
     },
-    'root': {
-        'level': 'DEBUG',
-        'handler': ['console'],
+    "root": {
+        "level": "DEBUG",
+        "handler": ["console"],
     }
 }

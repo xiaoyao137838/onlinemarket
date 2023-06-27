@@ -15,8 +15,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ExploreView(ListView):
-    logger.info('This is the explore view.')
-
     model = Post
     template_name = 'posts/explore.html'
 

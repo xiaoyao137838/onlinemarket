@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 logger.info(config('REDIS_SERVER'))
 redis_cli = redis.Redis(config('REDIS_SERVER'))
-logger.info('Redis is started')
+logger.info('Redis client is started')
 
 def create_flashsale(request, flashsale):
     add_vendor(request, flashsale)
