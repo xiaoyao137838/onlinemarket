@@ -3,6 +3,9 @@ from django.db.models.fields.related import ForeignKey
 from accounts.models import User
 from vendor.models import Product, Vendor
 import simplejson as json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 request_object = ''
@@ -75,7 +78,8 @@ class Order(models.Model):
                 for type, value in val.items():
                     for i, j in value.items():
                         tax += j
-        except:
+        except Exception as e:
+            logger.error(e)
             total = 0
         total = subtotal + tax
 

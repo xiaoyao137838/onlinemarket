@@ -11,13 +11,16 @@ from order.models import Order
 from django.test import TestCase
 import pytest
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 def test_customer_dashboard_authenticated(user):
 
     path = reverse('customer')
     request = RequestFactory().get(path)
     request.user = user
-    print('user is : ', user)
+    logger.info('user is : {}', user)
 
     response = customer_dashboard(request)
     assert response.status_code == 200

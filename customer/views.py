@@ -7,6 +7,9 @@ from order.models import Order, OrderedItem
 from accounts.forms import UserProfileForm
 from django.contrib import messages
 import simplejson as json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 def get_customer(request):
@@ -68,5 +71,6 @@ def customer_order(request, order_no):
             'tax_dict': tax_data,
         }
         return render(request, 'customers/customer_order.html', context)
-    except:
+    except Exception as e: 
+        logger.error(e)
         return redirect('customer')

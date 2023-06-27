@@ -16,11 +16,15 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.views import check_role_vendor
 import json
 import threading
+import logging
+
+logger = logging.getLogger(__name__)
 
 try:
     from flashsale.kafka.kafka_service import producer
-except:
-    print('Producer does not exist')
+except Exception as e:
+    logger.warning('Producer does not exist (from logger)')
+    logger.error(e)
     
 # Create your views here.
 
@@ -143,14 +147,14 @@ def select_flash_sale(request):
     if request.user.is_authenticated:
         if request.method == 'GET' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
             flash_sale_id = request.GET['flash_sale_id']
-            print(is_customer_qualified(request, flash_sale_id))
+            logger.info(is_customer_qualified(request, flash_sale_id))
             if is_customer_qualified(request, flash_sale_id):
                 add_customer_to_limit(request.user.id, flash_sale_id)
 
                 if lock_stock(flash_sale_id):
-                    print('locked successfully')
+                    logger.info('locked successfully')
                     data = dict(customer_id=request.user.id, flash_sale_id=flash_sale_id)
-                    print(json.dumps(data))
+                    logger.info(json.dumps(data))
                     producer.send(topic='create_order', 
                                   key=flash_sale_id.encode('utf-8'), 
                                   value=json.dumps(data).encode('utf-8'))
@@ -288,7 +292,8 @@ def make_payment(request):
                     'sale_order_no': sale_order_no,
                     'transaction_id': payment_no
                 })
-            except:
+            except Exception as e: 
+                logger.error(e)
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Order does not exist'

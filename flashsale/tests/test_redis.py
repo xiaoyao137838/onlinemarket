@@ -2,12 +2,14 @@
 from django.test import RequestFactory
 
 from flashsale.redis_service import is_customer_qualified, add_customer_to_limit, lock_stock, remove_customer_to_limit, reverse_stock
+import logging
 
+logger = logging.getLogger(__name__)
 
 def test_is_customer_qualified(user, redis_cli, flash_sale_redis):
     request = RequestFactory()
     request.user = user
-    print(user.id, flash_sale_redis.id)
+    logger.info('user id is {}, flash sale redis id is {}', user.id, flash_sale_redis.id)
 
     key = f'flash-user:{flash_sale_redis.id}' 
     redis_cli.srem(key, user.id)

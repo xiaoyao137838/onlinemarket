@@ -13,13 +13,16 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.messages.storage.fallback import FallbackStorage
 import pytest
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 def test_vendor_dashboard_authenticated(user, vendor):
 
     path = reverse('vendor')
     request = RequestFactory().get(path)
     request.user = user
-    print('user is : ', user)
+    logger.info('user is : {}', user)
 
     response = vendor_dashboard(request)
     assert response.status_code == 200

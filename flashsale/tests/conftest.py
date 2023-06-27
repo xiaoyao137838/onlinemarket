@@ -9,6 +9,9 @@ from datetime import datetime
 from kafka.producer import KafkaProducer
 from decouple import config
 import redis
+import logging
+
+logger = logging.getLogger(__name__)
 
 @pytest.fixture
 def customer(db):
@@ -28,7 +31,7 @@ def user_profile(db, user):
 
 @pytest.fixture
 def vendor(db, user, user_profile):
-    print('db is:', db)
+    logger.info('db is:', db)
     return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', slug_name='slug')
 
 @pytest.fixture

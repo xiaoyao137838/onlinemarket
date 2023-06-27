@@ -10,9 +10,13 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from postsharing.forms import PostForm
 from .models import Post, Comment, Like, Connection
 from accounts.models import User
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ExploreView(ListView):
+    logger.info('This is the explore view.')
+
     model = Post
     template_name = 'posts/explore.html'
 
@@ -83,7 +87,8 @@ def add_comment(request):
                 'user': user.username,
                 'comment': comment.content,
             }
-        except:
+        except Exception as e:
+            logger.error(e)
             result = 0
 
         return JsonResponse({
@@ -101,7 +106,8 @@ def add_like(request):
             like = Like(post=post, user=request.user)
             like.save()
             result = 1
-        except:
+        except Exception as e:
+            logger.error(e)
             like = Like.objects.get(post=post, user=request.user)
             like.delete()
             result = 0
@@ -120,18 +126,18 @@ def toggle_follow_unfollow(request):
         try:
             if request.user != owner:
                 if type == 'follow':
-                    print('this is from follow')
+                    logger.debug('this is from follow')
                     connection = Connection(follower=request.user, following=owner)
                     connection.save()
                 elif type == 'unfollow':
-                    print('this is from unfollow')
+                    logger.debug('this is from unfollow')
                     connection = Connection.objects.get(follower=request.user, following=owner)
                     connection.delete()
                 result = 1
             else: 
                 result = 0
         except Exception as e:
-            print(e)
+            logger.error(e)
             result = 0
 
         return JsonResponse({

@@ -2,6 +2,9 @@ from market.views import marketplace, vendor_detail, add_cart, deduce_cart, remo
 from django.urls import reverse
 from django.test import RequestFactory
 from market.models import CartItem
+import logging
+
+logger = logging.getLogger(__name__)
 
 def test_marketplace(customer):
     path = reverse('marketplace')
@@ -31,7 +34,7 @@ def test_add_cart(customer, product):
     assert post_count - pre_count == 1
 
 def test_deduce_cart(customer, cart_item, product):
-    print(cart_item.quantity)
+    logger.info('cart item quantity is {}', cart_item.quantity)
     pre_count = cart_item.quantity
     path = reverse('deduce_cart', args=[product.id])
     request = RequestFactory().get(path)
@@ -54,6 +57,6 @@ def test_remove_cart(customer, cart_item, product):
 
     response = remove_cart(request, cart_item.id)
     post_count = CartItem.objects.count()
-    print(pre_count, post_count)
+    logger.info('pre count is {}, post count is {}', pre_count, post_count)
     assert response.status_code == 200
     assert post_count == 0

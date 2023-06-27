@@ -187,3 +187,71 @@ if DEBUG == True:
     os.environ['PATH'] = os.path.join(BASE_DIR, '..\env\Lib\site-packages\osgeo') + ';' + os.environ['PATH']
     os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, '..\env\Lib\site-packages\osgeo\data\proj') + ';' + os.environ['PATH']
     GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, '..\env\Lib\site-packages\osgeo\gdal304.dll')
+
+LOGGING = {
+    "version": 1,  # the dictConfig format version
+    "disable_existing_loggers": False,  # retain the default 
+    "formatters": {
+        "verbose": {
+            "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            'level': 'DEBUG',
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "onlinemarket": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+        "postsharing": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+        "accounts": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+        "customer": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+        "vendor": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+        "order": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+        "market": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+        "flashsale": {
+            "level": "DEBUG",
+            'propagate': True,
+            "handlers": ["console"],
+        },
+    },
+    'root': {
+        'level': 'DEBUG',
+        'handler': ['console'],
+    }
+}

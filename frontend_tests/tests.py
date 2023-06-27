@@ -8,6 +8,9 @@ from selenium.webdriver.chrome.service import Service
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.management import call_command
 from django.urls import reverse
+import logging
+
+logger = logging.getLogger(__name__)
 
 @pytest.mark.usefixtures('vendor')
 class TestProjectListPage(StaticLiveServerTestCase):
@@ -26,8 +29,8 @@ class TestProjectListPage(StaticLiveServerTestCase):
 
     @pytest.mark.acceptance
     def test_homepage_displayed(self):
-        print(self.browser)
-        print(self.base_url)
+        logger.info(self.browser)
+        logger.info(self.base_url)
         self.browser.get(self.base_url)
         title = self.browser.title
         content = self.browser.find_element(By.TAG_NAME, 'h1').text
