@@ -73,5 +73,6 @@ if __name__ == '__main__':
                 logger.info('after available {}', flash_sale.available_qty)
                 logger.info('create_order is consumed by message queue')    
     
-            except:
+            except Exception as e:
                 logger.error('This flashsale does not exist')
+                logger.error(e)
