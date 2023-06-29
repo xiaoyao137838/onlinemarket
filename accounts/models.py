@@ -1,3 +1,4 @@
+from enum import Enum
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager 
 from django.db.models.fields.related import OneToOneField
@@ -33,12 +34,10 @@ class UserManager(BaseUserManager):
     
 
 class User(AbstractBaseUser):
-    VENDOR = 1
-    CUSTOMER = 2
-    ROLE_CHOICE = (
-        (VENDOR, 'Vendor'),
-        (CUSTOMER, 'Customer'),
-    )
+
+    class Role(models.IntegerChoices):
+        VENDOR = 1, ('Vendor') 
+        CUSTOMER = 2, ('Customer') 
 
     first_name = models.CharField(max_length=20, blank=True, null=True)
     last_name = models.CharField(max_length=20, blank=True, null=True)
@@ -46,7 +45,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(max_length=50)
     is_active = models.BooleanField(default=False)
     phone = models.CharField(max_length=15, blank=True, null=True)
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True)
+    role = models.PositiveSmallIntegerField(choices=Role.choices, blank=True, null=True)
 
     #Required fields
     is_admin = models.BooleanField(default=False)

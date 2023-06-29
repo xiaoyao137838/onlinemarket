@@ -86,11 +86,23 @@ DAYS = [
     (7, ('Sunday')),
 ]  
 
-HOUR_OF_DAY_24 = [(time(h, m).strftime('%I:%M %p'), time(h, m).strftime('%I:%M %p')) for h in range(0, 24) for m in (0, 30)]
 
 class OpeningHour(models.Model):
+
+    class Day(models.IntegerChoices):
+        MONDAY = (1, ('Monday'))
+        TUESDAY = (2, ('Tuesday'))
+        WEDNESDAY = (3, ('Wednesday'))
+        THURSDAY = (4, ('Thursday'))
+        FRIDAY = (5, ('Friday'))
+        SATURDAY = (6, ('Saturday'))
+        SUNDAY = (7, ('Sunday'))
+
+    HOUR_OF_DAY_24 = [(time(h, m).strftime('%I:%M %p'), time(h, m).strftime('%I:%M %p')) 
+                      for h in range(0, 24) for m in (0, 30)]
+
     vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
-    day = models.IntegerField(choices=DAYS)
+    day = models.IntegerField(choices=Day.choices)
     from_time = models.CharField(choices=HOUR_OF_DAY_24, max_length=50, blank=True, null=True)
     to_time = models.CharField(choices=HOUR_OF_DAY_24, max_length=50, blank=True, null=True)
     is_closed = models.BooleanField(default=False)

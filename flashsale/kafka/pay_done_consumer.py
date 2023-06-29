@@ -4,9 +4,9 @@ import django
 import logging
 
 logger = logging.getLogger(__name__)
-module_path = os.path.abspath(os.getcwd() + '\\')
+module_path = os.path.abspath(''.join([os.getcwd(), '\\']))
 
-path_folder = os.path.abspath(os.getcwd() + '\\flashsale')
+path_folder = os.path.abspath(''.join([os.getcwd(), '\\flashsale']))
 if path_folder in sys.path:
     sys.path.remove(path_folder)
 

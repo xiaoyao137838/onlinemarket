@@ -26,17 +26,18 @@ class FlashSale(models.Model):
 
 
 class FlashOrder(models.Model):
-    STATUS = [
-        (-1, 'No stock'),
-        (0, 'Created'),
-        (1, 'Paied'),
-        (2, 'Invalid')
-    ]
+
+    class Status(models.IntegerChoices):
+        NO_STOCK = -1, ('No stock') 
+        CREATED = 0, ('Created') 
+        PAIED = 1, ('Paied')
+        INVALID = 2, ('Invalid')
+
     order_no = models.CharField(max_length=50, unique=True)
     flash_sale = models.ForeignKey(FlashSale, on_delete=models.SET_NULL, blank=True, null=True)
     customer = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, blank=True, null=True)
-    status = models.SmallIntegerField(choices=STATUS, default=0)
+    status = models.SmallIntegerField(choices=Status.choices, default=0)
     payment_method = models.CharField(max_length=50, blank=True, null=True)
     payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
     sub_amount = models.FloatField()

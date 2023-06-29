@@ -1,12 +1,21 @@
+from enum import Enum
 import os
 import sys
 import django
 import logging
 
 logger = logging.getLogger(__name__)
-module_path = os.path.abspath(os.getcwd() + '\\')
+class Role(Enum):
+    Vendor = 1
+    Customer = 2
+logger.error(Role.Vendor.name) 
+logger.error(Role.Vendor.value)   
+module_path = os.path.abspath(''.join([os.getcwd(), '\\']))
+logger.error('module_path is %s', module_path)
 
-path_folder = os.path.abspath(os.getcwd() + '\\flashsale')
+path_folder = os.path.abspath(''.join([os.getcwd(), '\\flashsale']))
+logger.error('path_folder is %s', path_folder)
+
 if path_folder in sys.path:
     sys.path.remove(path_folder)
 
