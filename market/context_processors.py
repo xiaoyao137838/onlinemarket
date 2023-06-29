@@ -33,7 +33,7 @@ def get_cart_amounts(request):
             for cart_item in cart_items:
                 subtotal += cart_item.quantity * cart_item.product.price
         except Exception as e: 
-            logging.error(e)
+            logger.error(e)
             subtotal = 0    
 
         try:
@@ -43,7 +43,7 @@ def get_cart_amounts(request):
             tax_dict = {tax_obj.tax_type: {str(tax_obj.percentage): tax}}
             grand_total = subtotal + tax
         except Exception as e: 
-            logging.error(e)
+            logger.error(e)
             subtotal = 0
 
     return dict(subtotal=round(subtotal, 2), tax=tax, tax_dict=tax_dict, grand_total=round(grand_total, 2))

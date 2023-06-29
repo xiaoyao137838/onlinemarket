@@ -27,9 +27,12 @@ def customer_profile(request):
         if profile_form.is_valid() and user_form.is_valid():
             profile_form.save()
             user_form.save()
+            logger.info('Customer profile updated successfully')
             messages.success(request, 'Customer profile updated successfully')
             return redirect('customer_profile')
         else:
+            logger.error(user_form.errors)
+            logger.error(profile_form.errors)
             context = {
                 'user_form': user_form,
                 'profile_form': profile_form,

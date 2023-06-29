@@ -32,9 +32,12 @@ def vendor_profile(request):
         if profile_form.is_valid() and vendor_form.is_valid():
             profile_form.save()
             vendor_form.save()
+            logger.info('Vendor profile updated successfully.')
             messages.success(request, 'Vendor profile updated successfully')
             return redirect('vendor_profile')
         else:
+            logger.error(profile_form.errors)
+            logger.error(vendor_form.errors)
             context = {
                 'vendor_form': vendor_form,
                 'profile_form': profile_form,
@@ -55,7 +58,7 @@ def vendor_profile(request):
 @user_passes_test(check_role_vendor)
 def vendor_orders(request):
     vendor = get_vendor(request)
-    orders = Order.objects.filter(vendors__in=[vendor.id], status='Completed').order_by('-created_at')
+    orders = Order.objects.filter(vendors__in=[vendor.pk], status='Completed').order_by('-created_at')
 
     context = {
         'orders': orders,
@@ -91,8 +94,8 @@ def products(request):
     products_flashsales = flashsales.values_list('product', flat=True)
 
     for product in products:
-        if product.id in products_flashsales:
-            product.flashsale = flashsales.get(product=product.id)
+        if product.pk in products_flashsales:
+            product.flashsale = flashsales.get(product=product.pk) # type: ignore
 
     context = {
         'products': products,
@@ -113,8 +116,11 @@ def add_product(request):
             product.save()
             product.slug_name = slugify(name)+'-'+str(product.id)
             product.save()
+            logger.info('Product is added successfully.')
             messages.success(request, 'Add product successfully')
             return redirect('products')
+        else:
+            logger.error(product_form.errors)
     
     product_form = ProductForm()
     context = {
@@ -135,8 +141,11 @@ def product(request, id):
             product = product_form.save()
             product.slug_name = slugify(name)+'-'+str(product.id)
             product.save()
+            logger.info('Product is updated successfully')
             messages.success(request, 'Product is updated successfully')
             return redirect('products')
+        else:
+            logger.error(product_form.errors)
     
     product_form = ProductForm(instance=product)
     context = {
@@ -153,9 +162,11 @@ def delete_product(request, id):
 
     if product:
         product.delete()
+        logger.info('Product is deleted successfully.')
         messages.info(request, 'Product is deleted')
         return redirect('products')
     else:
+        logger.error('No such product found.')
         messages.error(request, 'No such product found')
         return redirect('products')
     
@@ -193,17 +204,19 @@ def add_opening_hour(request):
                 
                 if current_opening_hour:
                     if current_opening_hour.is_closed:
+                        logger.info('Opening hour is added with closed.')
                         response = {
                             'status': 'success',
-                            'id': current_opening_hour.id,
-                            'day': current_opening_hour.get_day_display(),
+                            'id': current_opening_hour.pk,
+                            'day': current_opening_hour.get_day_display(), # type: ignore
                             'is_closed': 'Closed',
                         }
                     else:
+                        logger.info('Opening hour is added without closed.')
                         response = {
                             'status': 'success',
-                            'id': current_opening_hour.id,
-                            'day': current_opening_hour.get_day_display(),
+                            'id': current_opening_hour.pk,
+                            'day': current_opening_hour.get_day_display(), # type: ignore
                             'from_hour': current_opening_hour.from_time,
                             'to_hour': current_opening_hour.to_time,
                         }
@@ -217,8 +230,10 @@ def add_opening_hour(request):
                 }
                 return JsonResponse(response)
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
     else:
+        logger.warning('Login required.')
         return JsonResponse({'status': 'failed', 'message': 'Please login first'})
  
 def delete_opening_hour(request, id):
@@ -226,8 +241,11 @@ def delete_opening_hour(request, id):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             opening_hour = get_object_or_404(OpeningHour, id=id)
             opening_hour.delete()
+            logger.info('Opening hour is deleted.')
             return JsonResponse({'status': 'success', 'id': id})
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
     else:
+        logger.warning('Login required.')
         return JsonResponse({'status': 'login_required', 'message': 'Please login first'})

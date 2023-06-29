@@ -6,7 +6,7 @@ from datetime import time, date, datetime
 
 # Create your models here.
 class Vendor(models.Model):
-    user = OneToOneField(User, on_delete=models.CASCADE, related_name='vendor')
+    user = OneToOneField(User, on_delete=models.CASCADE)
     profile = OneToOneField(UserProfile, on_delete=models.CASCADE)
     vendor_name = models.CharField(max_length=50)
     slug_name = models.SlugField(max_length=50, unique=True)
@@ -37,9 +37,9 @@ class Vendor(models.Model):
         return is_open
     
     def save(self, *args, **kwargs):
-        if self.id:
+        if self.pk:
             #update
-            origin = Vendor.objects.get(id=self.id)
+            origin = Vendor.objects.get(id=self.pk)
             if origin.is_verified != self.is_verified:
                 mail_template = 'emails/vendor_approval.html'
                 context = {
@@ -76,17 +76,6 @@ class Product(models.Model):
     def clean(self):
         self.name = self.name.capitalize() 
 
-DAYS = [
-    (1, ('Monday')),
-    (2, ('Tuesday')),
-    (3, ('Wednesday')),
-    (4, ('Thursday')),
-    (5, ('Friday')),
-    (6, ('Saturday')),
-    (7, ('Sunday')),
-]  
-
-
 class OpeningHour(models.Model):
 
     class Day(models.IntegerChoices):
@@ -112,5 +101,5 @@ class OpeningHour(models.Model):
         unique_together = ('vendor', 'day', 'from_time', 'to_time')
 
     def __str__(self):
-        return self.get_day_display()
+        return self.get_day_display() # type: ignore
     

@@ -39,15 +39,15 @@ if __name__ == '__main__':
         except:
             try:
                 flash_sale = FlashSale.objects.get(id=flash_sale_id)
-                logger.info('flash sale: ', flash_sale)
+                logger.info('Flash sale found: %s', flash_sale)
                 product = flash_sale.product
                 sub_amount = flash_sale.new_price
                 tax_obj = Tax.objects.get(tax_type='Tax')
                 tax_amount = sub_amount * float(tax_obj.percentage) / 100
                 tax_data = {tax_obj.tax_type: { str(tax_obj.percentage): tax_amount }}
                 total_amount = sub_amount + tax_amount
-                logger.info('before locked {}', flash_sale.locked_qty)
-                logger.info('before available {}', flash_sale.available_qty)
+                logger.info('Before creating order, locked quantity: %s', flash_sale.locked_qty)
+                logger.info('Before creating order, available quantity: %s', flash_sale.available_qty)
 
                 if flash_sale.available_qty <= 0:
                     status = -1
@@ -69,8 +69,8 @@ if __name__ == '__main__':
                 )
                 flash_order.order_no = generate_order_no(flash_order)
                 flash_order.save()
-                logger.info('after locked {}', flash_sale.locked_qty)
-                logger.info('after available {}', flash_sale.available_qty)
+                logger.info('After creating order, locked quantity: %s', flash_sale.locked_qty)
+                logger.info('After creating order, available quantity: %s', flash_sale.available_qty)
                 logger.info('create_order is consumed by message queue')    
     
             except Exception as e:

@@ -21,12 +21,12 @@ class Payment(models.Model):
         return self.payment_no
     
 class Order(models.Model):
-    STATUS = (
-        ('New', 'New'),
-        ('Accepted', 'Accepted'),
-        ('Completed', 'Completed'),
-        ('Canceled', 'Canceled'),
-    )
+
+    class Status(models.TextChoices):
+        NEW = ('New', 'New')
+        ACCEPTED = ('Accepted', 'Accepted')
+        COMPLETED = ('Completed', 'Completed')
+        CANCELED = ('Canceled', 'Canceled')
 
     order_no = models.CharField(max_length=50, unique=True)
     customer = ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
@@ -46,7 +46,7 @@ class Order(models.Model):
     tax_data = models.JSONField(blank=True, null=True, help_text="Data format: 'tax_type': {{'percentage': 'tax_amount'}}")
     total_amount = models.FloatField()
     total_data = models.JSONField(blank=True, null=True)
-    status = models.CharField(max_length=15, choices=STATUS, default='New')
+    status = models.CharField(max_length=15, choices=Status.choices, default='New')
     payment = ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
     payment_method = models.CharField(max_length=20, blank=True, null=True)
 
@@ -64,14 +64,14 @@ class Order(models.Model):
         return ','.join([str(i) for i in self.vendors.all()])
     
     def get_total_by_vendor(self):
-        vendor = Vendor.objects.get(user=request_object.user)
+        vendor = Vendor.objects.get(user=request_object.user) # type: ignore
         subtotal = 0
         tax = 0
         total = 0
         tax_dict = {}
         try:
-            total_dict = json.loads(self.total_data)
-            data = total_dict[str(vendor.id)]
+            total_dict =  json.loads(self.total_data) if self.total_data else {}
+            data = total_dict[str(vendor.pk)]
             for key, val in data.items():
                 subtotal += float(key)
                 tax_dict.update(val)

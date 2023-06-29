@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 def register_user(request):
     if request.user.is_authenticated:
+        logger.warning('Already login')
         messages.warning(request, 'Already login')
         return redirect('home')
     
@@ -28,7 +29,7 @@ def register_user(request):
         form = UserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.role = User.CUSTOMER
+            user.role = User.Role.CUSTOMER
             user.save()
 
             mail_subject = 'Please activate your account'
@@ -41,6 +42,7 @@ def register_user(request):
                 'form': form,
             }
             return render(request, 'accounts/registerUser.html', context)
+        
     form = UserForm()
     context = {
         'form': form,
@@ -49,6 +51,7 @@ def register_user(request):
 
 def register_vendor(request):
     if request.user.is_authenticated:
+        logger.warning('Already login')
         messages.warning(request, 'Already login')
         return redirect('home')
     
@@ -60,7 +63,7 @@ def register_vendor(request):
             username = user_form.cleaned_data['username']
             password = user_form.cleaned_data['password']
             user = User.objects.create_user(username, email, password)
-            user.role = User.VENDOR
+            user.role = User.Role.VENDOR
             user.save()
             
             vendor = vendor_form.save(commit=False)
@@ -74,6 +77,8 @@ def register_vendor(request):
             messages.success(request, 'Vendor is registered successfully')
             return redirect('login')
         else:
+            logger.error(vendor_form.errors)
+            logger.error(user_form.errors)
             messages.error(request, 'Invalid vendor form')
             context = {
                 'user_form': user_form,
@@ -103,12 +108,14 @@ def activate(request, uidb64, token):
         messages.success(request, 'This account is activated successfully')
         return redirect('dashboard')
     else:
+        logger.error('Invalid activation link.')
         messages.error(request, 'Invalid activation link')
         return redirect('home')
 
 
 def login(request):
     if request.user.is_authenticated:
+        logger.warning('Already login')
         messages.warning(request, 'Already login')
         return redirect('home')
     
@@ -122,6 +129,7 @@ def login(request):
             messages.success(request, 'Login successfully')
             return redirect('dashboard')
         else:
+            logger.error('Invalid credentials')
             messages.error(request, 'Invalid credentials')
             return redirect('login')
         
@@ -134,6 +142,7 @@ def login(request):
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
+    logger.info('Logout successfully')
     messages.info(request, 'Logout successfully')
     return redirect('login')
 
@@ -144,6 +153,7 @@ def password_reset_request(request):
             user = User.objects.get(username=username)
             mail_subject = 'Reset password'
             # send_email_activation(request, user, mail_subject=mail_subject, email_template='emails/email_password_reset.html')
+            logger.info('Email sent successfully for password reset')
             messages.success(request, 'Email sent successfully for password reset')
             return redirect('login')
         except Exception as e:
@@ -166,9 +176,11 @@ def password_reset_validator(request, uid, token):
 
     if user and default_token_generator.check_token(user, token):
         request.session['uid'] = uid
+        logger.info('Ready to reset password')
         messages.info(request, 'Please reset your password')
         return redirect('password_reset')
     else:
+        logger.error('Invalid activation link')
         messages.error(request, 'Invalid activation link')
         return redirect('home')
 
@@ -183,9 +195,11 @@ def password_reset(request):
             user.set_password(password)
             user.is_active = True
             user.save()
+            logger.info('Successfully reset password')
             messages.success(request, 'Successfully reset password')
             return redirect('login')
         else:
+            logger.error('Passwords do not match')
             messages.error(request, 'Passwords do not match')
 
     form = UserForm()

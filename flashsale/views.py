@@ -53,9 +53,11 @@ def add_flashsale(request, product_id):
             sale.save()
 
             create_flashsale(request, sale)
+            logger.info('The new flash sale is added')
             messages.success(request, 'The new flash sale is added')
             return redirect('products')
         else:
+            logger.error(sale_form.errors)
             messages.error(request, 'Some fields are not correct')
             context = {
                 'sale_form': sale_form,
@@ -81,6 +83,7 @@ def add_flashsale(request, product_id):
 def delete_flashsale(request, id):
     flashsale = get_object_or_404(FlashSale, id=id)
     flashsale.delete()
+    logger.info('The flash sale is deleted successfully')
     messages.info(request, 'The flash sale is deleted successfully')
     vendor = get_vendor(request)
     return redirect('products')
@@ -104,9 +107,11 @@ def flashsale_vendor(request, id):
             sale = sale_form.save()
             add_stock(request, sale)
             add_sale(request, sale)
+            logger.info('The flash sale is updated successfully')
             messages.success(request, 'The flash sale is updated successfully')
             return redirect(f'/flash_sales/v/{id}')
         else:
+            logger.error(sale_form.errors)
             messages.error(request, 'Some fields are not correct')
             context = {
                 'sale_form': sale_form,
@@ -152,12 +157,13 @@ def select_flash_sale(request):
                 add_customer_to_limit(request.user.id, flash_sale_id)
 
                 if lock_stock(flash_sale_id):
-                    logger.info('locked successfully')
+                    logger.info('Locked successfully')
                     data = dict(customer_id=request.user.id, flash_sale_id=flash_sale_id)
-                    logger.info(json.dumps(data))
+                    logger.info('The value sent by Kafka producer: %s', json.dumps(data))
                     producer.send(topic='create_order', 
                                   key=flash_sale_id.encode('utf-8'), 
                                   value=json.dumps(data).encode('utf-8'))
+                    
                     def delay_send():
                         producer.send(topic='check_pay_status', 
                                       key=flash_sale_id.encode('utf-8'), 
@@ -170,22 +176,26 @@ def select_flash_sale(request):
                         'message': 'The flashsale is selected successfully'
                     })
                 else:
+                    logger.warning('The flashsale is sold out')
                     return JsonResponse({
                         'status': 'error',
                         'message': 'Sorry, the flashsale is sold out'
                     })
             else:
+                logger.warning('The customer have selected the flash sale before.')
                 return JsonResponse({
                     'status': 'error',
                     'message': 'Sorry, you have selected before'
                 })
             
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({
                 'status': 'error',
                 'message': 'Invalid request'
             })
     else:
+        logger.warning('Login required.')
         return JsonResponse({
             'status': 'error',
             'message': 'Please login first'
@@ -207,13 +217,16 @@ def checkout(request, id):
     }
     
     sale_order = flash_sale_order(request, id)['flash_sale_order']
-  
+    if not sale_order:
+        logger.error('The sale order not found.')
+        raise TypeError()
+    
     sale_order_form = SaleOrderForm(initial=init, instance=sale_order)
     context = {
         'sale_order_form': sale_order_form,
         'subtotal': sale_order.sub_amount,
         'tax': sale_order.tax_amount,
-        'tax_dict': json.loads(sale_order.tax_data),
+        'tax_dict': json.loads(sale_order.tax_data) if sale_order.tax_data else None,
         'grand_total': sale_order.total_amount,
         'sale_order': sale_order
     }
@@ -224,6 +237,7 @@ def make_order(request, id):
     if request.method == 'POST':
         sale_order = flash_sale_order(request, id)['flash_sale_order']
         if not sale_order:
+            logger.warning('Order is not created yet.')
             messages.warning(request, 'Please wait')
             return redirect('/flash_checkout')
         
@@ -242,8 +256,10 @@ def make_order(request, id):
                 'grand_total': sale_order.total_amount
             }
 
+            logger.info('Order confirmed.')
             return render(request, 'flashsales/place_order.html', context)
         else: 
+            logger.error(order_form.errors)
             messages.error(request, 'Some fields are not correct')
             context = {
                 'order_form': order_form
@@ -263,6 +279,7 @@ def make_payment(request):
             try:
                 sale_order = FlashOrder.objects.get(order_no=sale_order_no)
                 if sale_order.status != 0:
+                    logger.warning('This order is not able to pay')
                     return JsonResponse({
                         'status': 'error',
                         'message': 'This order is not able to pay'
@@ -286,6 +303,7 @@ def make_payment(request):
                                 key=sale_order_no.encode('utf-8'), 
                                 value=json.dumps(data).encode('utf-8'))
                 
+                logger.info('Payment is created successfully')
                 return JsonResponse({
                     'status': 'success',
                     'message': 'Payment is created successfully',
@@ -299,11 +317,13 @@ def make_payment(request):
                     'message': 'Order does not exist'
                 })
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({
                 'status': 'error',
                 'message': 'Invalid request'
             })
     else:
+        logger.warning('Login required.')
         return JsonResponse({
             'status': 'error',
             'message': 'Login first'

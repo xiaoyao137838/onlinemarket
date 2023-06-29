@@ -78,7 +78,7 @@ def lock_stock(flashsale_id):
             count = pipe.get(key)
             logger.info('pipe created', count)
 
-            if count <= b"0":
+            if count <= b"0": # type: ignore
                 pipe.unwatch()
                 return False
             else:

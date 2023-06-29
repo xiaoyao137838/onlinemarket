@@ -31,7 +31,7 @@ def place_order(request):
 
             for item in cart_items:
                 if item.product.vendor not in vendor_list:
-                    vendor_list.append(item.product.vendor.id)
+                    vendor_list.append(item.product.vendor.pk)
 
             cart_amounts = get_cart_amounts(request)
             order.sub_amount = cart_amounts['subtotal']
@@ -40,13 +40,13 @@ def place_order(request):
             order.tax_data = json.dumps(cart_amounts['tax_dict'])
             order.save()
 
-            order.order_no = datetime.now().strftime('%Y%m%d%H%M%S') + str(order.id)
+            order.order_no = datetime.now().strftime('%Y%m%d%H%M%S') + str(order.pk)
             order.vendors.add(*vendor_list)
             for item in cart_items:
-                if (item.product.vendor.id) not in sub_dict:
-                    sub_dict[(item.product.vendor.id)] = item.quantity * item.product.price
+                if (item.product.vendor.pk) not in sub_dict:
+                    sub_dict[(item.product.vendor.pk)] = item.quantity * item.product.price
                 else:
-                    sub_dict[(item.product.vendor.id)] += item.quantity * item.product.price 
+                    sub_dict[(item.product.vendor.pk)] += item.quantity * item.product.price 
 
             for key in sub_dict:
                 sub_tax = {}
@@ -106,11 +106,12 @@ def make_payment(request):
 
             # Clean the cart
             cart_items.delete()
-            
+            logger.info('Cart items are moved to ordered items and deleted.')
+
             # send email to customer
             ordered_products = OrderedItem.objects.filter(order=order)
             subtotal = order.sub_amount
-            tax_data = json.loads(order.tax_data)
+            tax_data = json.loads(order.tax_data) if order.tax_data else {}
             total = order.total_amount
 
             mail_subject = 'Thank you for your order'
@@ -130,7 +131,7 @@ def make_payment(request):
             # send emails to vendors
             mail_subject = 'You receive a new order'
             mail_template = 'order/vendor_order_email.html'
-            total_data = json.loads(order.total_data)
+            total_data = json.loads(order.total_data) if order.total_data else {}
             tax = Tax.objects.get(tax_type='Tax')
             for key in total_data:
                 vendor = Vendor.objects.get(id=key)
@@ -153,6 +154,7 @@ def make_payment(request):
                 
                 # send_notification(mail_subject, mail_template, context)
 
+            logger.info('The payment is successful.')
             return JsonResponse({
                 'status': 'success',
                 'order_no': order.order_no,
@@ -160,11 +162,13 @@ def make_payment(request):
             })
         except Exception as e: 
             logger.error(e)
+            logger.error('This order does not exist.')
             return JsonResponse({
             'status': 'failed',
             'message': 'This order does not exist.',
         })
     else:
+        logger.warning('Invalid request.')
         return JsonResponse({
             'status': 'failed',
             'message': 'Invalid request',

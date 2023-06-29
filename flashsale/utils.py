@@ -17,5 +17,4 @@ def check_role_customer(user):
 def get_role_url(request):
     if request.user.role == 1:
         return '/flash_sales/v/'
-    if request.user.role == 2:
-        return '/flash_sales/c/'
+    return '/flash_sales/c/'

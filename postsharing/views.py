@@ -15,8 +15,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ExploreView(ListView):
-    logger.info('This is the explore view.')
-
     model = Post
     template_name = 'posts/explore.html'
 
@@ -36,7 +34,7 @@ class PostListView(LoginRequiredMixin, ListView):
         user = self.request.user
         following_set = set()
         following_set.add(user)
-        for connection in user.friendship_creator_set.all():
+        for connection in user.friendship_creator_set.all(): # type: ignore
             following_set.add(connection.following)
 
         return Post.objects.filter(user__in=following_set).order_by('-modified_at')
@@ -70,7 +68,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'posts/delete_post.html'
     login_url = 'login'
     success_url = reverse_lazy('posts')
-
+    
 def add_comment(request):
     if request.user.is_authenticated and request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         post_id = request.POST['post_id']
@@ -87,6 +85,8 @@ def add_comment(request):
                 'user': user.username,
                 'comment': comment.content,
             }
+            logger.info('New comment is created.')
+
         except Exception as e:
             logger.error(e)
             result = 0
@@ -106,11 +106,13 @@ def add_like(request):
             like = Like(post=post, user=request.user)
             like.save()
             result = 1
+            logger.info('Like is added.')
         except Exception as e:
             logger.error(e)
             like = Like.objects.get(post=post, user=request.user)
             like.delete()
             result = 0
+            logger.info('Like is removed.')
 
         return JsonResponse({
             'result': result,
@@ -126,13 +128,15 @@ def toggle_follow_unfollow(request):
         try:
             if request.user != owner:
                 if type == 'follow':
-                    logger.debug('this is from follow')
+                    logger.debug('This is from follow')
                     connection = Connection(follower=request.user, following=owner)
                     connection.save()
+                    logger.info('Connection is built.')
                 elif type == 'unfollow':
-                    logger.debug('this is from unfollow')
+                    logger.debug('This is from unfollow')
                     connection = Connection.objects.get(follower=request.user, following=owner)
                     connection.delete()
+                    logger.info('Connection is removed.')
                 result = 1
             else: 
                 result = 0

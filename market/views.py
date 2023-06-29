@@ -104,12 +104,11 @@ def product_detail(request, product_slug):
     product = get_object_or_404(Product, slug_name=product_slug)
     opening_hours, current_opening_hours = all_opening_hours(product.vendor)
 
+    cart_item = None 
     if request.user.is_authenticated:
         customer = get_customer(request)
         cart_item = CartItem.objects.filter(customer=customer, product=product).first()
-    else:
-        Cart_item = None 
-
+   
     context = {
         'product': product,
         'vendor': product.vendor,
@@ -137,8 +136,9 @@ def add_cart(request, product_id):
                 product = Product.objects.get(id=product_id)
                 try:
                     cart_item = CartItem.objects.get(customer=customer, product=product)
-                    cart_item.quantity += 1 # type: ignore
+                    cart_item.quantity += 1 
                     cart_item.save()
+                    logger.info('Product is added to cart')
                     return JsonResponse({'status': 'success', 'message': 'Product is added to cart', 'cart_counter': get_cart_counter(request), 'cart_product_qty': cart_item.quantity, 'amounts': get_cart_amounts(request)})
                 except Exception as e:
                     logger.error(e)
@@ -148,8 +148,10 @@ def add_cart(request, product_id):
                 logger.error(e)
                 return JsonResponse({'status': 'failed', 'message': 'This product does not exist'})
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
     else:
+        logger.warning('Login required.')
         return JsonResponse({'status': 'login_required', 'message': 'Please log in'})
     
 
@@ -164,10 +166,12 @@ def deduce_cart(request, product_id):
                     if cart_item.quantity > 1:
                         cart_item.quantity -= 1
                         cart_item.save()
+                        logger.info('Product is deduced from cart')
                         return JsonResponse({'status': 'success', 'message': 'Product is deduced from cart', 'cart_counter': get_cart_counter(request), 'cart_product_qty': cart_item.quantity, 'amounts': get_cart_amounts(request)})
                     else:
                         cart_item.delete()
                         cart_item.quantity = 0
+                        logger.info('Product is deduced from cart')
                         return JsonResponse({'status': 'success', 'message': 'Product is deduced from cart', 'cart_counter': get_cart_counter(request), 'cart_product_qty': cart_item.quantity, 'amounts': get_cart_amounts(request)})
                     
                 except Exception as e:
@@ -177,8 +181,10 @@ def deduce_cart(request, product_id):
                 logger.error(e)
                 return JsonResponse({'status': 'failed', 'message': 'This product does not exist'})
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({'status': 'failed', 'message': 'Invalid request'})
     else:
+        logger.warning('Login required.')
         return JsonResponse({'status': 'login_required', 'message': 'Please log in'})
                 
 
@@ -189,6 +195,7 @@ def remove_cart(request, cart_id):
                 try:
                     cart_item = CartItem.objects.get(customer=customer, id=cart_id)
                     cart_item.delete()
+                    logger.info('Delete the item successfully.')
                     return JsonResponse({
                         'status': 'success',
                         'message': 'Delete the item from cart',
@@ -203,11 +210,13 @@ def remove_cart(request, cart_id):
                     })
             
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({
                 'status': 'failed',
                 'message': 'Invalid request',
             })
     else:
+        logger.warning('Login required.')
         return JsonResponse({
             'status': 'login_required',
             'message': 'Please log in first'
@@ -256,10 +265,11 @@ def add_review(request):
                 posted_review.comment = request.POST['comment']
                 try:
                     posted_review.save()
+                    logger.info('New review is added successfully.')
                     return JsonResponse({
                         'status': 'success',
                         'message': 'New review is added successfully.',
-                        'id': posted_review.id,
+                        'id': posted_review.pk,
                         'rating': posted_review.rating,
                         'comment': posted_review.comment,
                         'username': posted_review.author.username
@@ -277,11 +287,13 @@ def add_review(request):
                     'message': 'The product does not exist.'
                 })
         else:
+            logger.info('Invalid request.')
             return JsonResponse({
                 'status': 'fail',
                 'message': 'Invalid request'
             })
     else:
+        logger.info('Login required.')
         return JsonResponse({
             'status': 'fail',
             'message': 'Please login first'
@@ -294,10 +306,11 @@ def delete_review(request, review_id):
             logger.info('received request to delete review')
             try:
                 review = get_object_or_404(Review, id=review_id)
-                logger.info('To delete: {}', review.id)
+                logger.info('To delete: %s', review.pk)
                 if review.author == user:
                     try: 
                         review.delete()
+                        logger.info('This review is deleted successfully.')
                         return JsonResponse({
                             'status': 'success',
                             'message': 'This review is deleted successfully.',
@@ -310,6 +323,7 @@ def delete_review(request, review_id):
                             'message': 'Cannot delete this review.'
                         })
                 else:
+                    logger.warning('User has no authority to delete.')
                     return JsonResponse({
                         'status': 'fail',
                         'message': 'You have not authority to delete it.'
@@ -321,11 +335,13 @@ def delete_review(request, review_id):
                     'message': 'This review does not exist.',
                 })
         else:
+            logger.warning('Invalid request.')
             return JsonResponse({
                 'status': 'fail',
                 'message': 'Invalid request'
             })
     else:
+        logger.warning('Login required.')
         return JsonResponse({
             'status': 'fail',
             'message': 'Please login first'

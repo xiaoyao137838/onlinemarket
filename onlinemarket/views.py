@@ -9,10 +9,10 @@ from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 import logging
 
-newLog = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 def home(request):
-    newLog.info('This is the home page! %s', newLog.level)
+    logger.info('This is the home page!')
     current_location_info = get_or_set_current_location(request)
     if current_location_info:
         lat, lng = current_location_info
@@ -22,7 +22,7 @@ def home(request):
         vendors = Vendor.objects.filter(is_verified=True, user__is_active=True, profile__location__distance_lte=(pnt, D(km=100))).annotate(distance=Distance("profile__location", pnt)).order_by("distance")[:6]
 
         for vendor in vendors:
-            vendor.kms = round(vendor.distance.km, 1)
+            vendor.kms = round(vendor.distance.km, 1) # type: ignore
     else:
         vendors = Vendor.objects.filter(is_verified=True, user__is_active=True)[:6]
 

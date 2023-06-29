@@ -15,7 +15,7 @@ class FlashSale(models.Model):
     from_time = models.DateTimeField(blank=True, null=True)
     to_time = models.DateTimeField()
     total_qty = models.IntegerField()
-    locked_qty = models.IntegerField(default=0, blank=True, null=True)
+    locked_qty = models.IntegerField(default=0)
     available_qty = models.IntegerField(default=0)
 
     modified_at = models.DateTimeField(auto_now=True)

@@ -6,7 +6,7 @@ from django.db.models.fields.related import ForeignKey
 # Create your models here.
 class CartItem(models.Model):
     product = ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(blank=True, null=True)
+    quantity = models.IntegerField(default=0)
     customer = ForeignKey(User, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)

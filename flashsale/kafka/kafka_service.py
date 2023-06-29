@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 producer = KafkaProducer(bootstrap_servers=config('KAFKA_SERVER'))
-logger.info('Message queue is started', producer)
+logger.info('Message queue is started with producer: %s', producer)
 
 def key_deserializer(key):
     return key.decode('utf-8')
