@@ -40,16 +40,16 @@ class TestUrls:
 
     def test_flash_make_order(self):
         path = reverse('flash_make_order', args=[1])
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == make_order
 
     def test_flash_make_payment(self):
         path = reverse('flash_make_payment')
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == make_payment
     
     def test_flash_pay_done(self):
         path = reverse('flash_pay_done')
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == pay_done
 

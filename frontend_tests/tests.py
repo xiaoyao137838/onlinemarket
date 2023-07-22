@@ -19,7 +19,7 @@ class TestProjectListPage(StaticLiveServerTestCase):
         options.add_argument("--headless=new")
 
         BASE_DIR = Path(__file__).resolve().parent.parent
-        driver_path = os.path.join(BASE_DIR, 'chromedriver.exe')
+        driver_path = os.path.join(BASE_DIR, 'utils/chromedriver.exe')
         ff_service = Service(executable_path=driver_path)
         self.browser = webdriver.Chrome(service=ff_service, options=options)
         self.base_url = self.live_server_url

@@ -12,8 +12,10 @@ class TestForms(SimpleTestCase):
             'new_price': 10.0,
             'to_time': datetime.now(),
             'total_qty': 10,
-            'available_qty': 0
-        })        
+            'available_qty': 0,
+            'locked_qty': 0
+        })     
+
         assert form.is_valid()
 
     def test_sale_from_invalid_data(self):

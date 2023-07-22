@@ -37,7 +37,8 @@ def test_add_flashsale_POST(user, vendor, product):
             'new_price': 10.0,
             'to_time': datetime.now(),
             'total_qty': 10,
-            'available_qty': 0
+            'available_qty': 0,
+            'locked_qty': 0
     }
 
     setattr(request, 'session', 'session')
@@ -68,7 +69,7 @@ def test_delete_flashsale(user, vendor, flash_sale):
     path = reverse('delete_flashsale', args=[flash_sale.id])
     request = RequestFactory().get(path)
     request.user = user
-    logger.info('flash id: {}', flash_sale)
+    logger.info('flash id: %s', flash_sale)
 
     setattr(request, 'session', 'session')
     messages = FallbackStorage(request)
@@ -106,7 +107,8 @@ def test_flashsale_vendor_POST(user, vendor, flash_sale):
         'new_price': 10.0,
         'to_time': datetime.now(),
         'total_qty': 10,
-        'available_qty': 0
+        'available_qty': 0,
+        'locked_qty': 0
     }
     path = reverse('flashsale_vendor', args=[flash_sale.id])
     request = RequestFactory().post(path, context)

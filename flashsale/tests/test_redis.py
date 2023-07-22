@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 def test_is_customer_qualified(user, redis_cli, flash_sale_redis):
     request = RequestFactory()
     request.user = user
-    logger.info('user id is {}, flash sale redis id is {}', user.id, flash_sale_redis.id)
+    logger.info('user id is %s', user.id)
+    logger.info('The flash sale redis id is %s', flash_sale_redis.id)
 
     key = f'flash-user:{flash_sale_redis.id}' 
     redis_cli.srem(key, user.id)

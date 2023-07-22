@@ -44,17 +44,17 @@ class TestUrls:
 
     def test_dashboard(self):
         path = reverse('dashboard')
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == dashboard
     
     def test_customer_dashboard(self):
         path = reverse('customer_dashboard')
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == customer_dashboard
 
     def test_vendor_dashboard(self):
         path = reverse('vendor_dashboard')
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == vendor_dashboard
 
 

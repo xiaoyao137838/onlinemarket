@@ -34,7 +34,7 @@ def test_add_cart(customer, product):
     assert post_count - pre_count == 1
 
 def test_deduce_cart(customer, cart_item, product):
-    logger.info('cart item quantity is {}', cart_item.quantity)
+    logger.info('cart item quantity is %s', cart_item.quantity)
     pre_count = cart_item.quantity
     path = reverse('deduce_cart', args=[product.id])
     request = RequestFactory().get(path)
@@ -57,6 +57,6 @@ def test_remove_cart(customer, cart_item, product):
 
     response = remove_cart(request, cart_item.id)
     post_count = CartItem.objects.count()
-    logger.info('pre count is {}, post count is {}', pre_count, post_count)
+    logger.info('pre count is %s, post count is %s', pre_count, post_count)
     assert response.status_code == 200
     assert post_count == 0

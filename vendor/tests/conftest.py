@@ -16,14 +16,14 @@ def user_profile(db, user):
 
 @pytest.fixture
 def vendor(db, user, user_profile):
-    logger.info('db is: {}', db)
+    logger.info('db is: %s', db)
     return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', verified_file=tempfile.NamedTemporaryFile(suffix=".jpg").name, slug_name='vendor_1')
 
 
 @pytest.fixture(scope='function')
 def product(db, vendor):
     product = Product.objects.create(name='product_1', price=10, vendor=vendor, image=tempfile.NamedTemporaryFile(suffix=".jpg").name)
-    logger.info('product image: {}', product.image)
+    logger.info('product image: %s', product.image)
     return product
 
 @pytest.fixture(scope='function')

@@ -22,7 +22,7 @@ def user_profile(db, user):
 
 @pytest.fixture
 def vendor(db, user, user_profile):
-    logger.info('db is: {}', db)
+    logger.info('db is: %s', db)
     return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', slug_name='vendor_1')
 
 @pytest.fixture(scope='function')

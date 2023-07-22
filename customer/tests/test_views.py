@@ -20,7 +20,7 @@ def test_customer_dashboard_authenticated(user):
     path = reverse('customer')
     request = RequestFactory().get(path)
     request.user = user
-    logger.info('user is : {}', user)
+    logger.info('user is : %s', user)
 
     response = customer_dashboard(request)
     assert response.status_code == 200

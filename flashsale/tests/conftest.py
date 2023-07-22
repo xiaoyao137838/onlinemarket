@@ -19,7 +19,7 @@ def customer(db):
 
 @pytest.fixture
 def user(db):
-    return User.objects.create(username='xiaoyao', email='a@gmail.com', role=1)
+    return User.objects.create(id=19, username='xiaoyao', email='a@gmail.com', role=1)
 
 @pytest.fixture
 def user_profile(db, user):
@@ -31,7 +31,7 @@ def user_profile(db, user):
 
 @pytest.fixture
 def vendor(db, user, user_profile):
-    logger.info('db is:', db)
+    logger.info('db is: %s', db)
     return Vendor.objects.create(user=user, profile=user_profile, vendor_name='vendor_1', slug_name='slug')
 
 @pytest.fixture

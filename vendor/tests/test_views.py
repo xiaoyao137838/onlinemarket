@@ -22,7 +22,7 @@ def test_vendor_dashboard_authenticated(user, vendor):
     path = reverse('vendor')
     request = RequestFactory().get(path)
     request.user = user
-    logger.info('user is : {}', user)
+    logger.info('user is : %s', user)
 
     response = vendor_dashboard(request)
     assert response.status_code == 200

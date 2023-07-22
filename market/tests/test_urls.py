@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 class TestUrls:
     def test_marketplace(self):
         path = reverse('marketplace')
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == marketplace
 
     def test_vendor_detail(self):
         path = reverse('vendor_detail', args=['slug-name'])
-        logger.info('path is: {}', path)
+        logger.info('path is: %s', path)
         assert resolve(path).func == vendor_detail
 
     def test_add_cart(self):
