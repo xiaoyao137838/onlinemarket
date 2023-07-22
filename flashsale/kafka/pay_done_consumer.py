@@ -3,10 +3,14 @@ import sys
 import django
 import logging
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
-module_path = os.path.abspath(''.join([os.getcwd(), '\\']))
+logger.level = logging.DEBUG
 
-path_folder = os.path.abspath(''.join([os.getcwd(), '\\flashsale']))
+module_path = os.getcwd()
+
+path_folder = os.path.join(os.getcwd(), 'flashsale')
+
 if path_folder in sys.path:
     sys.path.remove(path_folder)
 

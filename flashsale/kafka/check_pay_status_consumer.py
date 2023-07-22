@@ -6,11 +6,8 @@ import logging
 
 logger = logging.getLogger(__name__)
   
-module_path = os.path.abspath(''.join([os.getcwd(), '\\']))
-logger.error('module_path is %s', module_path)
-
-path_folder = os.path.abspath(''.join([os.getcwd(), '\\flashsale']))
-logger.error('path_folder is %s', path_folder)
+module_path = os.getcwd()
+path_folder = os.path.join(os.getcwd(), 'flashsale')
 
 if path_folder in sys.path:
     sys.path.remove(path_folder)

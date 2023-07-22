@@ -2,10 +2,9 @@ import os
 import sys
 import django
 
+module_path = os.getcwd()
+path_folder = os.path.join(os.getcwd(), 'flashsale')
 
-module_path = os.path.abspath(''.join([os.getcwd(), '\\']))
-
-path_folder = os.path.abspath(''.join([os.getcwd(), '\\flashsale']))
 if path_folder in sys.path:
     sys.path.remove(path_folder)
 
