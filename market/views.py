@@ -240,6 +240,15 @@ def checkout(request):
         'state': profile.state,
         'country': profile.country,
         'zip_code': profile.zip_code,
+        'first_name_bill': request.user.first_name,
+        'last_name_bill': request.user.last_name,
+        'phone_bill': request.user.phone,
+        'email_bill': request.user.email,
+        'address_bill': profile.address,
+        'city_bill': profile.city,
+        'state_bill': profile.state,
+        'country_bill': profile.country,
+        'zip_code_bill': profile.zip_code,
     }
     order_form = OrderForm(initial=initial_values)
     context = {

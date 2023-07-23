@@ -7,22 +7,156 @@
             <div class="row">
                 
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <form action="{% url 'place_order' %}" method="post" >
+                        {% csrf_token %}
                     <div class="tabs-holder horizontal">
                         <ul class="stickynav-tabs nav nav-tabs">
-                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Your Billing Address</a></li>
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Your Shipping Information</a></li>
                             
                         </ul>
                         <div class="tab-content">
                             <div id="home" class="tab-pane in active">
                                 <div class="menu-itam-holder pb-3">
                                     <div>
-                                        <form action="{% url 'place_order' %}" method="post" >
-                                            {% csrf_token %}
+                                    
                                             <ul>
-                                            {{order_form.as_p}}
                                             
-                                            </ul>
-                                        
+                                            <div class="form-fields-set">
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                    
+                                                        <label> First name *</label>
+                                                        {{order_form.first_name}}
+                                                  
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                  
+                                                        <label> Last name *</label>
+                                                        {{order_form.last_name}}
+                                           
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                            
+                                                        <label> Email </label>
+                                                        {{order_form.email}}
+                                
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                  
+                                                        <label> Phone </label>
+                                                        {{order_form.phone}}
+                                       
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                               
+                                                        <label>Address *</label>
+                                                        {{order_form.address}}
+                                           
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                          
+                                                        <label>City *</label>
+                                                        {{order_form.city}}
+                    
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    
+                                                        <label>State *</label>
+                                                        {{order_form.state}}
+                                      
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                               
+                                                        <label>Country</label>
+                                                        {{order_form.country}}
+                 
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                       
+                                                        <label>Zip code</label>
+                                                        {{order_form.zip_code}}
+                                
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Your Billing Information</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder pb-3">
+                                    <div>
+                                    
+                                            <ul>
+                                            
+                                            <div class="form-fields-set">
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                    
+                                                        <label> First name </label>
+                                                        {{order_form.first_name_bill}}
+                                                  
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                  
+                                                        <label> Last name </label>
+                                                        {{order_form.last_name_bill}}
+                                           
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                            
+                                                        <label> Email </label>
+                                                        {{order_form.email_bill}}
+                                
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                                  
+                                                        <label> Phone </label>
+                                                        {{order_form.phone_bill}}
+                                       
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                               
+                                                        <label>Address </label>
+                                                        {{order_form.address_bill}}
+                                           
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                          
+                                                        <label>City </label>
+                                                        {{order_form.city_bill}}
+                    
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    
+                                                        <label>State </label>
+                                                        {{order_form.state_bill}}
+                                      
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                               
+                                                        <label>Country</label>
+                                                        {{order_form.country_bill}}
+                 
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                       
+                                                        <label>Zip code</label>
+                                                        {{order_form.zip_code_bill}}
+                                
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>

@@ -24,8 +24,12 @@ def place_order(request):
 
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
+        print(order_form)
         if order_form.is_valid():
+            print(order_form['first_name_bill'])
             order = order_form.save(commit=False)
+            print(order.first_name_bill)
+            print(order.first_name)
             order.customer = request.user
             order.payment_method = request.POST['payment_method']
 
@@ -190,6 +194,17 @@ def payment_complete(request):
             'tax_data': order.tax_data,
             'tax_amount': order.tax_amount,
             'total': order.total_amount,
+            'user_name': request.user.username,
+
+            'first_name': order.first_name,
+            'last_name': order.last_name,
+            'phone': order.phone,
+            'email': order.email,
+            'address': order.address,
+            'city': order.city,
+            'state': order.state,
+            'country': order.country,
+            'zip_code': order.zip_code,
         }
         return render(request, 'order/payment_complete.html', context)
 

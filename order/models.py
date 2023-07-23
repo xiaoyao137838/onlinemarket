@@ -41,6 +41,16 @@ class Order(models.Model):
     country = models.CharField(max_length=20, blank=True, null=True)
     zip_code = models.CharField(max_length=20, blank=True, null=True)
 
+    first_name_bill = models.CharField(max_length=20, blank=True, null=True)
+    last_name_bill = models.CharField(max_length=20, blank=True, null=True)
+    phone_bill = models.CharField(max_length=20, blank=True, null=True)
+    email_bill = models.EmailField(max_length=50, blank=True, null=True)
+    address_bill = models.CharField(max_length=50, blank=True, null=True)
+    city_bill = models.CharField(max_length=20, blank=True, null=True)
+    state_bill = models.CharField(max_length=20, blank=True, null=True)
+    country_bill = models.CharField(max_length=20, blank=True, null=True)
+    zip_code_bill = models.CharField(max_length=20, blank=True, null=True)
+
     sub_amount = models.FloatField()
     tax_amount = models.FloatField()
     tax_data = models.JSONField(blank=True, null=True, help_text="Data format: 'tax_type': {{'percentage': 'tax_amount'}}")
