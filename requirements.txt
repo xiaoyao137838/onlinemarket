@@ -18,7 +18,7 @@ Django==4.1.6
 exceptiongroup==1.1.1
 Faker==12.0.1
 fonttools==4.39.4
-./utils/GDAL-3.4.3-cp310-cp310-win_amd64.whl
+# ./utils/GDAL-3.4.3-cp310-cp310-win_amd64.whl
 geojson==3.0.1
 h11==0.14.0
 idna==3.4
@@ -42,7 +42,8 @@ packaging==23.0
 Pillow==9.4.0
 pluggy==1.0.0
 polyline==2.0.0
-psycopg2==2.9.5
+# psycopg2==2.9.5
+psycopg2-binary=2.9.6
 pycparser==2.21
 pyparsing==3.0.9
 PySocks==1.7.1
