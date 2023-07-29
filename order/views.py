@@ -24,12 +24,9 @@ def place_order(request):
 
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
-        print(order_form)
+ 
         if order_form.is_valid():
-            print(order_form['first_name_bill'])
             order = order_form.save(commit=False)
-            print(order.first_name_bill)
-            print(order.first_name)
             order.customer = request.user
             order.payment_method = request.POST['payment_method']
 
